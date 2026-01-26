@@ -30,6 +30,9 @@ public class Offer {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(nullable = false)
     private LocalDate validFrom;
+
+    @Column(nullable = false)
     private LocalDate validTo;
 }
