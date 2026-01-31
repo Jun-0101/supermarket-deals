@@ -8,31 +8,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.supermarket_deals.entity.Offer;
-import com.example.supermarket_deals.service.OfferService;
+import com.example.supermarket_deals.entity.Deal;
+import com.example.supermarket_deals.service.DealService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/offers")
+@RequestMapping("/deals")
 @RequiredArgsConstructor
-public class OfferController {
-    private final OfferService offerService;
+public class DealController {
+    private final DealService offerService;
 
     @GetMapping("/supermarket")
-    public List<Offer> getActiveOffersBySupermarket(
+    public List<Deal> getActiveDealsBySupermarket(
         @RequestParam String name,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            return offerService.getActiveOffersBySupermarketName(name, date);
+            return offerService.getActiveDealsBySupermarketName(name, date);
         }
 
     @GetMapping("/product")
-    public List<Offer> getActiveOffersByProductName(
+    public List<Deal> getActiveDealsByProductName(
         @RequestParam String name,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            return offerService.getActiveOffersByProductName(name, date);
+            return offerService.getActiveDealsByProductName(name, date);
         }
 };
