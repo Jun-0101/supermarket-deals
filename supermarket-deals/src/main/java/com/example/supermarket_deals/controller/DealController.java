@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/deals")
 @RequiredArgsConstructor
 public class DealController {
-    private final DealService offerService;
+    private final DealService dealService;
 
     @GetMapping("/supermarket")
     public List<Deal> getActiveDealsBySupermarket(
@@ -24,7 +24,7 @@ public class DealController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            return offerService.getActiveDealsBySupermarketName(name, date);
+            return dealService.getActiveDealsBySupermarketName(name, date);
         }
 
     @GetMapping("/product")
@@ -33,6 +33,6 @@ public class DealController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            return offerService.getActiveDealsByProductName(name, date);
+            return dealService.getActiveDealsByProductName(name, date);
         }
-};
+}

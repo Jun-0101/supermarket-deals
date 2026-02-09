@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class DealService {
-    private final DealRepository offerRepository;
+    private final DealRepository dealRepository;
     private final ProductRepository productRepository;
     private final SupermarketRepository supermarketRepository;
 
@@ -25,7 +25,7 @@ public class DealService {
             .findByNameIgnoreCase(name)
             .orElseThrow(() -> new RuntimeException("Supermarket not found"));
 
-        return offerRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(
+        return dealRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(
             supermarket, date, date
         );
     }
@@ -33,7 +33,7 @@ public class DealService {
     public List<Deal> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
-        return offerRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
+        return dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
             products, date, date);
     }
 }
