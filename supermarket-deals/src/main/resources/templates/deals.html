@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Supermarket Deals</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h2 {
+            margin-top: 40px;
+        }
+
+        input, button {
+            padding: 8px;
+            margin-right: 8px;
+        }
+
+        ul {
+            margin-top: 15px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🛒 Supermarket Deals</h1>
+
+<!-- ================= PRODUCT SEARCH ================= -->
+<h2>Search Deals by Product</h2>
+
+<form th:action="@{/deals-ui/product}" method="get">
+    <input type="text" name="name" placeholder="Product name" required>
+    <input type="date" name="date">
+    <button type="submit">Search</button>
+</form>
+
+<ul>
+    <li th:if="${productDeals == null}">No search yet</li>
+
+    <li th:each="deal : ${productDeals}">
+        <span th:text="'Product: ' + ${deal.productName}"></span> |
+        <span th:text="'Price: ' + ${deal.price}"></span> |
+        <span th:text="'Valid until: ' + ${deal.validUntil}"></span>
+    </li>
+</ul>
+
+<!-- ================= SUPERMARKET SEARCH ================= -->
+<h2>Search Deals by Supermarket</h2>
+
+<form th:action="@{/deals-ui/supermarket}" method="get">
+    <input type="text" name="name" placeholder="Supermarket name" required>
+    <input type="date" name="date">
+    <button type="submit">Search</button>
+</form>
+
+<ul>
+    <li th:if="${supermarketDeals == null}">No search yet</li>
+
+    <li th:each="deal : ${supermarketDeals}">
+        <span th:text="'Product: ' + ${deal.productName}"></span> |
+        <span th:text="'Price: ' + ${deal.price}"></span> |
+        <span th:text="'Valid until: ' + ${deal.validUntil}"></span>
+    </li>
+</ul>
+
+</body>
+</html>
