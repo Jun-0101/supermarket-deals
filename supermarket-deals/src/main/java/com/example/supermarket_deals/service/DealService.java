@@ -3,22 +3,21 @@ package com.example.supermarket_deals.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.supermarket_deals.entity.Deal;
-import com.example.supermarket_deals.entity.Product;
-import com.example.supermarket_deals.entity.Supermarket;
-import com.example.supermarket_deals.repository.DealRepository;
-import com.example.supermarket_deals.repository.ProductRepository;
-import com.example.supermarket_deals.repository.SupermarketRepository;
 
-import lombok.RequiredArgsConstructor;
+import com.example.supermarket_deals.dto.DealRequest;
+import com.example.supermarket_deals.entity.*;
+import com.example.supermarket_deals.repository.*;
 
 @Service
-@RequiredArgsConstructor
 public class DealService {
-    private final DealRepository dealRepository;
-    private final ProductRepository productRepository;
-    private final SupermarketRepository supermarketRepository;
+    @Autowired
+    private DealRepository dealRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private SupermarketRepository supermarketRepository;
 
     public List<Deal> getActiveDealsBySupermarketName(String name, LocalDate date) {
         Supermarket supermarket = supermarketRepository
@@ -35,5 +34,43 @@ public class DealService {
 
         return dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
             products, date, date);
+    }
+
+    public List<Deal> saveDeals(List<DealRequest> requests) {
+        List<Deal> deals = requests.stream().map(req -> {
+            return saveDeal(req);
+        }).toList();
+
+        if (deals == null) {
+            throw new IllegalArgumentException("Deal list can not be null");
+        }
+
+        return dealRepository.saveAll(deals);
+    }
+
+    public Deal saveDeal(DealRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request can not be null");
+        }
+        Product product = productRepository.findById(request.getProductId())
+                        .orElseThrow(() -> new RuntimeException("Product not found"));
+        Supermarket supermarket = supermarketRepository.findById(request.getSupermarketId())
+            .orElseThrow(() -> new RuntimeException("Supermarket not found"));
+
+        return Deal.builder()
+            .product(product)
+            .supermarket(supermarket)
+            .price(request.getPrice())
+            .validFrom(request.getValidFrom())
+            .validTo(request.getValidTo())
+            .build();
+    }
+
+    public void delete(Long dealId) {
+        dealRepository.deleteById(dealId);
+    }
+
+    public List<Deal> getAll() {
+        return dealRepository.findAll();
     }
 }
