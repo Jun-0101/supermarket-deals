@@ -52,9 +52,15 @@ public class DealService {
         if (request == null) {
             throw new IllegalArgumentException("Request can not be null");
         }
-        Product product = productRepository.findById(request.getProductId())
-                        .orElseThrow(() -> new RuntimeException("Product not found"));
-        Supermarket supermarket = supermarketRepository.findById(request.getSupermarketId())
+        Long productId = request.getProductId();
+        Long supermarketId = request.getSupermarketId();
+        if (productId == null || supermarketId == null) {
+            throw new IllegalArgumentException("Id can not be null");
+        }
+
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+        Supermarket supermarket = supermarketRepository.findById(supermarketId)
             .orElseThrow(() -> new RuntimeException("Supermarket not found"));
 
         return Deal.builder()
@@ -67,6 +73,9 @@ public class DealService {
     }
 
     public void delete(Long dealId) {
+        if (dealId == null) {
+            throw new IllegalArgumentException("Deal ID must not be null");
+        }
         dealRepository.deleteById(dealId);
     }
 

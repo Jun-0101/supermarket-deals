@@ -28,6 +28,9 @@ public class SupermarketService {
     }
 
     public void delete(Long supermarketId) {
+        if (supermarketId == null) {
+            throw new IllegalArgumentException("Supermarket ID must not be null");
+        }
         supermarketRepo.deleteById(supermarketId);
     }
 

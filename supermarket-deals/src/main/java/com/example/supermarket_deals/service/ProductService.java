@@ -29,6 +29,9 @@ public class ProductService {
     }
 
     public void delete(Long productId) {
+        if (productId == null) {
+            throw new IllegalArgumentException("Product ID must not be null");
+        }
         productRepo.deleteById(productId);
     }
 
