@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.service.ProductService;
 
-
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -22,8 +21,8 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Product> addProduct(@RequestBody Product supermarket){
-        return ResponseEntity.ok(productService.save(supermarket));
+    public ResponseEntity<Product> addProduct(@RequestBody Product product){
+        return ResponseEntity.ok(productService.save(product));
     } 
 
     @PostMapping("/addMany")

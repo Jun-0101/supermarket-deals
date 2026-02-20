@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.supermarket_deals.dto.DealRequest;
+import com.example.supermarket_deals.dto.*;
 import com.example.supermarket_deals.entity.*;
 import com.example.supermarket_deals.repository.*;
 
@@ -36,7 +36,7 @@ public class DealService {
             products, date, date);
     }
 
-    public List<Deal> saveDeals(List<DealRequest> requests) {
+    public List<Deal> saveDeals(List<DealRequestDto> requests) {
         List<Deal> deals = requests.stream().map(req -> {
             return saveDeal(req);
         }).toList();
@@ -48,7 +48,7 @@ public class DealService {
         return dealRepository.saveAll(deals);
     }
 
-    public Deal saveDeal(DealRequest request) {
+    public Deal saveDeal(DealRequestDto request) {
         if (request == null) {
             throw new IllegalArgumentException("Request can not be null");
         }
