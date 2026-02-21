@@ -79,8 +79,6 @@ public class DealServiceTest {
     @Test
     void testSaveDeal_throwException() {
         DealRequestDto request = new DealRequestDto(1L, 3L);
-        Product product = new Product();
-        Supermarket supermarket = new Supermarket();
 
         when(productRepository.findById(request.getProductId())).thenReturn(Optional.empty());
 
