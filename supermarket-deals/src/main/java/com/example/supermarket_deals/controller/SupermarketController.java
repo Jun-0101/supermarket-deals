@@ -25,12 +25,12 @@ public class SupermarketController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Supermarket> addSupermarket(@RequestBody Supermarket supermarket){
+    public ResponseEntity<Supermarket> addSupermarket(@RequestBody SupermarketDto supermarket){
         return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.save(supermarket));
     } 
 
     @PostMapping("/addMany")
-    public ResponseEntity<List<Supermarket>> addSupermarkets(@RequestBody List<Supermarket> supermarkets){
+    public ResponseEntity<List<Supermarket>> addSupermarkets(@RequestBody List<SupermarketDto> supermarkets){
         return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.saveMany(supermarkets));
     } 
 

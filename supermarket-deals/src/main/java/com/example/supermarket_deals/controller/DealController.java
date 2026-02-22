@@ -22,8 +22,8 @@ public class DealController {
 
    @GetMapping
     public List<DealRespondDto> getAllDeals() {
-
         List<Deal> foundDeals =  dealService.getAll();
+
         return foundDeals.stream().map(deal -> 
             new DealRespondDto(deal.getProduct().getName(),
             deal.getSupermarket().getName(),
@@ -65,14 +65,14 @@ public class DealController {
             )).toList();
         }
 
-    @PostMapping("/addMany")
-    public ResponseEntity<List<Deal>> saveDeals(@RequestBody List<DealRequestDto> dealRequests) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeals(dealRequests));
-    }
-
     @PostMapping("/add")
     public ResponseEntity<Deal> saveDeal(@RequestBody DealRequestDto dealRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeal(dealRequest));
+    }
+
+    @PostMapping("/addMany")
+    public ResponseEntity<List<Deal>> saveDeals(@RequestBody List<DealRequestDto> dealRequests) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeals(dealRequests));
     }
 
     @DeleteMapping("/delete/{id}")
