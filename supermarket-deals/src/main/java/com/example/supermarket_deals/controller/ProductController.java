@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.supermarket_deals.dto.ProductDto;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.service.ProductService;
 
@@ -16,8 +17,13 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAll();
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productService.getAll();
+        return products.stream().map(prod -> new ProductDto(
+            prod.getName(),
+            prod.getBrand(),
+            prod.getInfos()
+            )).toList();
     }
 
     @PostMapping("/add")

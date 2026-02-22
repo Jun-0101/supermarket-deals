@@ -3,9 +3,11 @@ package com.example.supermarket_deals.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.supermarket_deals.dto.SupermarketDto;
 import com.example.supermarket_deals.entity.Supermarket;
 import com.example.supermarket_deals.service.SupermarketService;
 
@@ -17,18 +19,19 @@ public class SupermarketController {
     private SupermarketService supermarketService;
 
    @GetMapping
-    public List<Supermarket> getAllSupermarkets() {
-        return supermarketService.getAll();
+    public List<SupermarketDto> getAllSupermarkets() {
+        List<Supermarket> supermarkets = supermarketService.getAll();
+        return supermarkets.stream().map(market -> new SupermarketDto(market.getName())).toList();
     }
 
     @PostMapping("/add")
     public ResponseEntity<Supermarket> addSupermarket(@RequestBody Supermarket supermarket){
-        return ResponseEntity.ok(supermarketService.save(supermarket));
+        return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.save(supermarket));
     } 
 
     @PostMapping("/addMany")
     public ResponseEntity<List<Supermarket>> addSupermarkets(@RequestBody List<Supermarket> supermarkets){
-        return ResponseEntity.ok(supermarketService.saveMany(supermarkets));
+        return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.saveMany(supermarkets));
     } 
 
     @DeleteMapping("/delete/{id}")
