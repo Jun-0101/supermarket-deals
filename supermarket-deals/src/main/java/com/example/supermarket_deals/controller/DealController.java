@@ -1,5 +1,6 @@
 package com.example.supermarket_deals.controller;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -8,9 +9,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import com.example.supermarket_deals.dto.*;
-import com.example.supermarket_deals.entity.Deal;
 import com.example.supermarket_deals.service.DealService;
 
 @RestController
@@ -22,15 +23,7 @@ public class DealController {
 
    @GetMapping
     public List<DealRespondDto> getAllDeals() {
-        List<Deal> foundDeals =  dealService.getAll();
-
-        return foundDeals.stream().map(deal -> 
-            new DealRespondDto(deal.getProduct().getName(),
-            deal.getSupermarket().getName(),
-            deal.getPrice(),
-            deal.getValidFrom(),
-            deal.getValidTo()))
-            .toList();
+        return dealService.getAll();
     }
 
     @GetMapping("/bySupermarket")
@@ -39,14 +32,7 @@ public class DealController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            List<Deal> foundDeals = dealService.getActiveDealsBySupermarketName(name, date);
-            return foundDeals.stream().map(deal -> new DealRespondDto(
-                deal.getProduct().getName(),
-                deal.getSupermarket().getName(),
-                deal.getPrice(),
-                deal.getValidFrom(),
-                deal.getValidTo()
-            )).toList();
+            return dealService.getActiveDealsBySupermarketName(name, date);
         }
 
     @GetMapping("/byProduct")
@@ -55,24 +41,19 @@ public class DealController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
             if (date == null) date = LocalDate.now();
 
-            List<Deal> foundDeals = dealService.getActiveDealsByProductName(name, date);
-            return foundDeals.stream().map(deal -> new DealRespondDto(
-                deal.getProduct().getName(),
-                deal.getSupermarket().getName(),
-                deal.getPrice(),
-                deal.getValidFrom(),
-                deal.getValidTo()
-            )).toList();
+            return dealService.getActiveDealsByProductName(name, date);
         }
 
     @PostMapping("/add")
-    public ResponseEntity<Deal> saveDeal(@RequestBody DealRequestDto dealRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeal(dealRequest));
+    public ResponseEntity<DealRespondDto> saveDeal(@RequestBody @Valid DealRequestDto request) {
+        DealRespondDto saved = dealService.saveDeal(request);
+        
+        return ResponseEntity.created(URI.create("/product/" + saved.getId())).body(saved);
     }
 
     @PostMapping("/addMany")
-    public ResponseEntity<List<Deal>> saveDeals(@RequestBody List<DealRequestDto> dealRequests) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeals(dealRequests));
+    public ResponseEntity<List<DealRespondDto>> saveDeals(@RequestBody List<DealRequestDto> requests) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeals(requests));
     }
 
     @DeleteMapping("/delete/{id}")

@@ -1,0 +1,23 @@
+package com.example.supermarket_deals.mapper;
+
+import com.example.supermarket_deals.dto.ProductRequestDto;
+import com.example.supermarket_deals.dto.ProductRespondDto;
+import com.example.supermarket_deals.entity.Product;
+
+public class ProductMapper {
+    public ProductRespondDto toDto(Product product) {
+        return new ProductRespondDto(
+            product.getId(),
+            product.getName(),
+            product.getBrand(),
+            product.getInfos());
+    }
+
+    public Product toEntity(ProductRequestDto respond) {
+        return Product.builder()
+        .name(respond.getName())
+        .brand(respond.getBrand())
+        .infos(respond.getInfos())
+        .build();
+    }
+}

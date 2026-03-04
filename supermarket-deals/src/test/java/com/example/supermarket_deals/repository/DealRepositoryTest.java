@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import com.example.supermarket_deals.entity.*;
+import com.example.supermarket_deals.entity.Deal;
+import com.example.supermarket_deals.entity.Product;
+import com.example.supermarket_deals.entity.Supermarket;
 
 @DataJpaTest
 public class DealRepositoryTest {

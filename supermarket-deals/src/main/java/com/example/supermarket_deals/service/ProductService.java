@@ -5,27 +5,33 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.supermarket_deals.dto.ProductRequestDto;
+import com.example.supermarket_deals.dto.ProductRespondDto;
 import com.example.supermarket_deals.entity.Product;
+import com.example.supermarket_deals.mapper.ProductMapper;
 import com.example.supermarket_deals.repository.ProductRepository;
 
 @Service
 public class ProductService {
-
     @Autowired
     private ProductRepository productRepo;
+    @Autowired
+    private ProductMapper mapper;
 
-    public Product save(Product product) {
-        if (product == null) {
-            throw new IllegalArgumentException("Product cannot be null");
-        }
-        return productRepo.save(product);
+    public ProductRespondDto save(ProductRequestDto request) {
+        Product product = mapper.toEntity(request);
+
+        Product saved = productRepo.save(product);
+        return mapper.toDto(saved);
     }
 
-    public List<Product> saveMany(List<Product> products) {
-        if (products == null) {
+    public List<ProductRespondDto> saveMany(List<ProductRequestDto> requests) {
+        if (requests == null) {
             throw new IllegalArgumentException("Products list cannot be null");
         }
-        return productRepo.saveAll(products);
+
+        List<ProductRespondDto> dtos = requests.stream().map(request -> save(request)).toList();
+        return dtos;
     }
 
     public void delete(Long productId) {
@@ -35,7 +41,11 @@ public class ProductService {
         productRepo.deleteById(productId);
     }
 
-    public List<Product> getAll() {
-        return productRepo.findAll();
+    public List<ProductRespondDto> getAll() {
+        List<Product> products = productRepo.findAll();
+
+        return products.stream().map(
+            prod -> mapper.toDto(prod)
+        ).toList();
     }
 }

@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.annotation.Nonnull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DealRequestDto {
     @Nonnull
     private Long productId;

@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.supermarket_deals.dto.*;
-import com.example.supermarket_deals.entity.*;
+import com.example.supermarket_deals.entity.Deal;
+import com.example.supermarket_deals.entity.Product;
+import com.example.supermarket_deals.entity.Supermarket;
+import com.example.supermarket_deals.mapper.DealMapper;
 import com.example.supermarket_deals.repository.*;
 
 @Service
@@ -18,37 +21,53 @@ public class DealService {
     private ProductRepository productRepository;
     @Autowired
     private SupermarketRepository supermarketRepository;
+    @Autowired
+    private DealMapper mapper;
 
-    public List<Deal> getActiveDealsBySupermarketName(String name, LocalDate date) {
+    public List<DealRespondDto> getAll() {
+        List<Deal> deals = dealRepository.findAll();
+
+        return deals.stream().map(
+            deal -> mapper.toDto(deal)
+        ).toList();
+    }
+
+    public List<DealRespondDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
         Supermarket supermarket = supermarketRepository
             .findByNameIgnoreCase(name)
             .orElseThrow(() -> new RuntimeException("Supermarket not found"));
 
-        return dealRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(
+        List<Deal> deals = dealRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(
             supermarket, date, date
         );
+
+        return deals.stream().map(
+            deal -> mapper.toDto(deal)
+        ).toList();
     }
 
-    public List<Deal> getActiveDealsByProductName(String name, LocalDate date) {
+    public List<DealRespondDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
-        return dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
+        List<Deal> deals = dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
             products, date, date);
+
+        return deals.stream().map(
+            deal -> mapper.toDto(deal)
+        ).toList();
     }
 
-    public List<Deal> saveDeals(List<DealRequestDto> requests) {
-        List<Deal> deals = requests.stream().map(req -> {
-            return saveDeal(req);
-        }).toList();
-
-        if (deals == null) {
+    public List<DealRespondDto> saveDeals(List<DealRequestDto> requests) {
+        if (requests == null) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
 
-        return dealRepository.saveAll(deals);
+        return requests.stream().map(
+            request -> saveDeal(request)
+        ).toList();
     }
 
-    public Deal saveDeal(DealRequestDto request) {
+    public DealRespondDto saveDeal(DealRequestDto request) {
         if (request == null) {
             throw new IllegalArgumentException("Request can not be null");
         }
@@ -57,19 +76,16 @@ public class DealService {
         if (productId == null || supermarketId == null) {
             throw new IllegalArgumentException("Id can not be null");
         }
-
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new RuntimeException("Product not found"));
         Supermarket supermarket = supermarketRepository.findById(supermarketId)
             .orElseThrow(() -> new RuntimeException("Supermarket not found"));
 
-        return Deal.builder()
-            .product(product)
-            .supermarket(supermarket)
-            .price(request.getPrice())
-            .validFrom(request.getValidFrom())
-            .validTo(request.getValidTo())
-            .build();
+        Deal deal = mapper.toEntity(request, product, supermarket);
+
+        Deal saved = dealRepository.save(deal);
+
+        return mapper.toDto(saved);
     }
 
     public void delete(Long dealId) {
@@ -77,9 +93,5 @@ public class DealService {
             throw new IllegalArgumentException("Deal ID must not be null");
         }
         dealRepository.deleteById(dealId);
-    }
-
-    public List<Deal> getAll() {
-        return dealRepository.findAll();
     }
 }

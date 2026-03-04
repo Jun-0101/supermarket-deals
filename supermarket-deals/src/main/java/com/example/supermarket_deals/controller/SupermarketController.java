@@ -11,6 +11,8 @@ import com.example.supermarket_deals.dto.SupermarketDto;
 import com.example.supermarket_deals.entity.Supermarket;
 import com.example.supermarket_deals.service.SupermarketService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/supermarket")
 public class SupermarketController {
@@ -25,7 +27,7 @@ public class SupermarketController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Supermarket> addSupermarket(@RequestBody SupermarketDto supermarket){
+    public ResponseEntity<Supermarket> addSupermarket(@RequestBody @Valid SupermarketDto supermarket){
         return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.save(supermarket));
     } 
 
