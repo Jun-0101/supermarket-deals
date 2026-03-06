@@ -63,28 +63,41 @@ public class DealService {
         }
 
         return requests.stream().map(
-            request -> saveDeal(request)
+            request -> saveScrapedDeal(request)
         ).toList();
     }
 
-    public DealRespondDto saveDeal(DealRequestDto request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Request can not be null");
-        }
-        Long productId = request.getProductId();
-        Long supermarketId = request.getSupermarketId();
-        if (productId == null || supermarketId == null) {
-            throw new IllegalArgumentException("Id can not be null");
-        }
-        Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new RuntimeException("Product not found"));
-        Supermarket supermarket = supermarketRepository.findById(supermarketId)
-            .orElseThrow(() -> new RuntimeException("Supermarket not found"));
+    public DealRespondDto saveScrapedDeal(DealRequestDto dto) {
+        // find or save scrapped product
+        Product product = productRepository
+                .findByNameAndBranch(dto.getProductName(), dto.getBrand())
+                .orElseGet(() -> {
+                    Product p = new Product();
+                    p.setName(dto.getProductName());
+                    p.setBrand(dto.getBrand());
+                    p.setInfos(dto.getInfos());
+                    return productRepository.save(p);
+                });
 
-        Deal deal = mapper.toEntity(request, product, supermarket);
+        // find or save supermarket
+        Supermarket supermarket = supermarketRepository
+                .findByNameIgnoreCase(dto.getSupermarketName())
+                .orElseGet(() -> {
+                    Supermarket s = Supermarket.builder()
+                        .name(dto.getSupermarketName())
+                        .build();
+                    return supermarketRepository.save(s);
+                });
+
+        // create deal
+        Deal deal = new Deal();
+        deal.setProduct(product);
+        deal.setSupermarket(supermarket);
+        deal.setPrice(dto.getPrice());
+        deal.setValidFrom(dto.getValidFrom());
+        deal.setValidTo(dto.getValidTo());
 
         Deal saved = dealRepository.save(deal);
-
         return mapper.toDto(saved);
     }
 

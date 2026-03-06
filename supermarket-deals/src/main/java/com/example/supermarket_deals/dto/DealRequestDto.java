@@ -3,7 +3,6 @@ package com.example.supermarket_deals.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DealRequestDto {
-    @Nonnull
-    private Long productId;
-    @Nonnull
-    private Long supermarketId;
+    private String productName;
+    private String brand;
+    private String infos;
     private BigDecimal price;
+    private String supermarketName;
     private LocalDate validFrom;
     private LocalDate validTo;
 }

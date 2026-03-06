@@ -46,7 +46,7 @@ public class DealController {
 
     @PostMapping("/add")
     public ResponseEntity<DealRespondDto> saveDeal(@RequestBody @Valid DealRequestDto request) {
-        DealRespondDto saved = dealService.saveDeal(request);
+        DealRespondDto saved = dealService.saveScrapedDeal(request);
         
         return ResponseEntity.created(URI.create("/product/" + saved.getId())).body(saved);
     }
