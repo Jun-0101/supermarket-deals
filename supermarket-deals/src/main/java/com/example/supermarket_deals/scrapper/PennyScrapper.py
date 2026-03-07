@@ -65,15 +65,16 @@ class PennyScrapper:
             if not name or not price:
                 continue
             name = name.text.strip()
-            price = price.text.strip()
+            price = price.text.replace("*", "").strip()
             infos = item.select_one("offer-tile__unit-price")
             infos = infos.text.strip() if infos else ""
 
             deal = {
                 "productName": name,
                 "brand": "",
-                "price": price,
                 "infos": infos,
+                "price": price,
+                "supermarketName": "penny",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }
@@ -81,6 +82,3 @@ class PennyScrapper:
                 deals.append(deal)
 
         return deals
-
-    def post_scrapped_deals(self):
-        requests.post("http://localhost:8080/deal/addMany", json=self.scrapped_deals)

@@ -70,8 +70,9 @@ class AldiNordScrapper:
             deal = {
                 "productName": name,
                 "brand": brand,
-                "price": price,
                 "infos": ", ".join([unit, base_price]),
+                "price": price,
+                "supermarketName": "aldi nord",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }
@@ -80,13 +81,3 @@ class AldiNordScrapper:
                 deals.append(deal)
         
         return deals
-
-    def post_scrapped_deals(self):
-        try:
-            requests.post("http://localhost:8080/deal/addMany", json=self.scrapped_deals)
-        except requests.exceptions.ConnectionError:
-            print("Server not running — start your Spring Boot app first")
-        except requests.exceptions.Timeout:
-            print("Request timed out")
-        except requests.exceptions.HTTPError as e:
-            print(f"HTTP error: {e.response.status_code}", e.response.text)

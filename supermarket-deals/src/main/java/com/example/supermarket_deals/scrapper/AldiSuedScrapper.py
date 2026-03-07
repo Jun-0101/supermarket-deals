@@ -68,8 +68,9 @@ class AldiSuedScrapper:
             deal = {
                 "productName": name,
                 "brand": brand,
-                "price": price,
                 "infos": ", ".join([unit, base_price]),
+                "price": price,
+                "supermarketName": "aldi sued",
                 "validFrom": self.valid_from.isoformat(),
                 "validTo": self.valid_to.isoformat()
             }
@@ -78,6 +79,4 @@ class AldiSuedScrapper:
                 deals.append(deal)
         
         return deals
-
-    def post_scrapped_deals(self):
-        requests.post("http://localhost:8080/deal/addMany", json=self.scrapped_deals)
+ 

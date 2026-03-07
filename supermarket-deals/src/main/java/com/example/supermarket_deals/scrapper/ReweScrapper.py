@@ -65,14 +65,11 @@ class ReweScrapper:
         deal = {
             "productName": name,
             "brand": "",
-            "price": price,
             "infos": infos,
+            "price": price,
+            "supermarketName": "rewe",
             "validFrom": self.valid_from.isoformat(),
             "validTo": self.valid_to.isoformat()
         }
         
         return deal
-
-    def post_scrapped_deals(self):
-        requests.post("http://localhost:8080/deal/addMany", json=self.scrapped_deals)
-

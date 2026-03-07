@@ -14,24 +14,9 @@ class KauflandScrapper:
         self.url = url
         self.scrapped_deals = []
 
-    def load_more_deals(self, driver):
-        while True:
-            buttons = driver.find_elements(By.CSS_SELECTOR, "button.k-icon-button")
-
-            if not buttons:
-                break
-
-            for btn in buttons:
-                driver.execute_script("arguments[0].click();", btn)
-                time.sleep(2)
-
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
     def scrap_deals(self):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         driver.get(self.url)
-
-        #self.load_more_deals(driver)
 
         html = driver.page_source
         soup = Soup(html, "html.parser")
@@ -95,8 +80,9 @@ class KauflandScrapper:
             deal = {
                 "productName": title if subtitle == "" else subtitle,
                 "brand": title if subtitle != "" else "",
-                "price": price,
                 "infos": " ".join([unit, base_price]),
+                "price": price,
+                "supermarketName": "kaufland",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }
@@ -105,6 +91,3 @@ class KauflandScrapper:
                 deals.append(deal)
 
         return deals
-
-    def post_scrapped_deals(self):
-        requests.post("http://localhost:8080/deal/addMany", json=self.scrapped_deals)
