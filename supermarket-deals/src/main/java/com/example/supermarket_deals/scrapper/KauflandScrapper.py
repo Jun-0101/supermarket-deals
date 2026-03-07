@@ -68,7 +68,7 @@ class KauflandScrapper:
                 continue
             
             title = title.text.strip()
-            price = price.text.strip()
+            price = price.text.replace("*", "").strip()
 
             subtitle = item.select_one("div.k-product-tile__subtitle")
             subtitle = subtitle.text.strip() if subtitle else ""

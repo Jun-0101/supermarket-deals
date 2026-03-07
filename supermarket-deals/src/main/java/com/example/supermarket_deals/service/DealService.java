@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.supermarket_deals.dto.*;
 import com.example.supermarket_deals.entity.Deal;
@@ -57,11 +58,13 @@ public class DealService {
         ).toList();
     }
 
+    @Transactional
     public List<DealRespondDto> saveDeals(List<DealRequestDto> requests) {
         if (requests == null) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
-        dealRepository.deleteExpiredDeals();
+        dealRepository.deleteAll();
+
         return requests.stream().map(
             request -> saveDeal(request)
         ).toList();
