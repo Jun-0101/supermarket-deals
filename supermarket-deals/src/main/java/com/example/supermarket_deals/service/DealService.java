@@ -61,13 +61,13 @@ public class DealService {
         if (requests == null) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
-
+        dealRepository.deleteExpiredDeals();
         return requests.stream().map(
-            request -> saveScrapedDeal(request)
+            request -> saveDeal(request)
         ).toList();
     }
 
-    public DealRespondDto saveScrapedDeal(DealRequestDto dto) {
+    public DealRespondDto saveDeal(DealRequestDto dto) {
         // find or save scrapped product
         Product product = productRepository
                 .findByNameAndBranch(dto.getProductName(), dto.getBrand())
