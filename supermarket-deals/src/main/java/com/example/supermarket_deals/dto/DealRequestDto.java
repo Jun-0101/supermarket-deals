@@ -14,8 +14,8 @@ public class DealRequestDto {
     private String productName;
     private String brand;
     private String infos;
-    private BigDecimal price;
     private String supermarketName;
+    private BigDecimal price;
     private LocalDate validFrom;
     private LocalDate validTo;
 }

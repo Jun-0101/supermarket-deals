@@ -15,6 +15,8 @@ public class DealRespondDto {
     private Long id;
     @NotBlank
     private String productName;
+    private String brand;
+    private String infos;
     @NotBlank
     private String supermarketName;
     private BigDecimal price;

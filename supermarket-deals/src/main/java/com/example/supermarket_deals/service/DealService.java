@@ -67,35 +67,30 @@ public class DealService {
         ).toList();
     }
 
-    public DealRespondDto saveDeal(DealRequestDto dto) {
+    public DealRespondDto saveDeal(DealRequestDto request) {
         // find or save scrapped product
         Product product = productRepository
-                .findByNameAndBranch(dto.getProductName(), dto.getBrand())
+                .findByNameAndBrand(request.getProductName(), request.getBrand())
                 .orElseGet(() -> {
                     Product p = new Product();
-                    p.setName(dto.getProductName());
-                    p.setBrand(dto.getBrand());
-                    p.setInfos(dto.getInfos());
+                    p.setName(request.getProductName());
+                    p.setBrand(request.getBrand());
+                    p.setInfos(request.getInfos());
                     return productRepository.save(p);
                 });
 
         // find or save supermarket
         Supermarket supermarket = supermarketRepository
-                .findByNameIgnoreCase(dto.getSupermarketName())
+                .findByNameIgnoreCase(request.getSupermarketName())
                 .orElseGet(() -> {
                     Supermarket s = Supermarket.builder()
-                        .name(dto.getSupermarketName())
+                        .name(request.getSupermarketName())
                         .build();
                     return supermarketRepository.save(s);
                 });
 
         // create deal
-        Deal deal = new Deal();
-        deal.setProduct(product);
-        deal.setSupermarket(supermarket);
-        deal.setPrice(dto.getPrice());
-        deal.setValidFrom(dto.getValidFrom());
-        deal.setValidTo(dto.getValidTo());
+        Deal deal = mapper.toEntity(request, product, supermarket);
 
         Deal saved = dealRepository.save(deal);
         return mapper.toDto(saved);

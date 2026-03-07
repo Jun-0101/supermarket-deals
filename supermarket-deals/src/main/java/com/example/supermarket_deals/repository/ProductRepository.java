@@ -9,5 +9,5 @@ import com.example.supermarket_deals.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long>{
     List<Product> findByNameContainingIgnoreCase(String name);
 
-    Optional<Product> findByNameAndBranch(String name, String branch);
+    Optional<Product> findByNameAndBrand(String name, String brand);
 }

@@ -48,7 +48,9 @@ public class DealServiceTest {
         LocalDate to = LocalDate.now().plusDays(1);
         BigDecimal price = BigDecimal.valueOf(1.99);
         Product product = new Product();
-        product.setName("Red Bull");
+        product.setName("Drink");
+        product.setBrand("Red Bull");
+        product.setInfos("200 ml");
         Supermarket supermarket = new Supermarket();
         supermarket.setName("rewe");
         deal = Deal.builder()
@@ -59,8 +61,8 @@ public class DealServiceTest {
             .validTo(to)
             .build();
 
-        request = new DealRequestDto(1L, 1L, price, from, to);
-        respond = new DealRespondDto(1L, "Red Bull", "rewe", price, from, to);
+        request = new DealRequestDto("Drink", "Red Bull", "200ml","rewe", price, from, to);
+        respond = new DealRespondDto(1L, "Drink", "Red Bull", "200ml", "rewe", price, from, to);
     }
     // ----------------------------
     // getActiveDealsBySupermarketName
@@ -101,23 +103,15 @@ public class DealServiceTest {
         Product product = deal.getProduct();
         Supermarket supermarket = deal.getSupermarket();
 
-        when(productRepository.findById(request.getProductId())).thenReturn(Optional.of(product));
-        when(supermarketRepository.findById(request.getSupermarketId())).thenReturn(Optional.of(supermarket));
+        when(productRepository.findByNameAndBrand(request.getProductName(), request.getBrand())).thenReturn(Optional.of(product));
+        when(supermarketRepository.findByNameIgnoreCase(request.getSupermarketName())).thenReturn(Optional.of(supermarket));
         when(mapper.toEntity(request, product, supermarket)).thenReturn(deal);
         when(dealRepository.save(any())).thenReturn(deal);
         when(mapper.toDto(deal)).thenReturn(respond);
 
-
         DealRespondDto savedDeal = dealService.saveDeal(request);
         assertEquals(respond, savedDeal);
         verify(dealRepository).save(deal);
-    }
-
-    @Test
-    void testSaveDeal_throwException() {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> dealService.saveDeal(request));
     }
 
     // ----------------------------

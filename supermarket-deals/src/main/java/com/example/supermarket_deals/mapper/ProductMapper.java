@@ -1,9 +1,12 @@
 package com.example.supermarket_deals.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.example.supermarket_deals.dto.ProductRequestDto;
 import com.example.supermarket_deals.dto.ProductRespondDto;
 import com.example.supermarket_deals.entity.Product;
 
+@Component
 public class ProductMapper {
     public ProductRespondDto toDto(Product product) {
         return new ProductRespondDto(
