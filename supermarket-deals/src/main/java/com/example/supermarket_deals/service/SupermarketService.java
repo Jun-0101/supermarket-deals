@@ -26,14 +26,6 @@ public class SupermarketService {
         return supermarketRepo.save(supermarket);
     }
 
-    public List<Supermarket> saveMany(List<SupermarketDto> supermarketDtos) {
-        if (supermarketDtos == null || supermarketDtos.isEmpty()) {
-            throw new IllegalArgumentException("Supermarket list cannot be empty");
-        }
-        List<Supermarket> supermarkets = supermarketDtos.stream().map(dto -> Supermarket.builder().name(dto.getName()).build()).toList();
-        return supermarketRepo.saveAll(supermarkets);
-    }
-
     public void delete(Long supermarketId) {
         if (supermarketId == null) {
             throw new IllegalArgumentException("Supermarket ID must not be null");

@@ -16,14 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.supermarket_deals.dto.ProductRespondDto;
 import com.example.supermarket_deals.service.ProductService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ProductController.class)
 public class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper mapper;
     @MockitoBean
     private ProductService productService;
     private ProductRespondDto response;

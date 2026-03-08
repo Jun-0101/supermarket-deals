@@ -25,15 +25,6 @@ public class ProductService {
         return mapper.toDto(saved);
     }
 
-    public List<ProductRespondDto> saveMany(List<ProductRequestDto> requests) {
-        if (requests == null) {
-            throw new IllegalArgumentException("Products list cannot be null");
-        }
-
-        List<ProductRespondDto> dtos = requests.stream().map(request -> save(request)).toList();
-        return dtos;
-    }
-
     public void delete(Long productId) {
         if (productId == null) {
             throw new IllegalArgumentException("Product ID must not be null");

@@ -67,25 +67,6 @@ public class SupermarketControllerTest {
         verify(supermarketService).save(any());        
     }
 
-    // -------------------------
-    // POST /supermarket/addMany
-    // -------------------------
-    @Test
-    void testAddManySupermarkets() throws Exception {
-        List<Supermarket> input = List.of(new Supermarket(null, "rewe"), new Supermarket(null, "aldi"));
-        List<Supermarket> saved = List.of(new Supermarket(1L, "rewe"), new Supermarket(2L, "aldi"));
-        when(supermarketService.saveMany(any())).thenReturn(saved);
-
-        mockMvc.perform(post("/supermarket/addMany").contentType(MediaType.APPLICATION_JSON_VALUE).content(Objects.requireNonNull(objectMapper.writeValueAsString(input))))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[0].name").value("rewe"))
-            .andExpect(jsonPath("$[1].id").value(2))
-            .andExpect(jsonPath("$[1].name").value("aldi"));
-
-        verify(supermarketService).saveMany(any());        
-    }
-
     // --------------------------
     // DELETE /supermarket/delete/{id} 
     // --------------------------

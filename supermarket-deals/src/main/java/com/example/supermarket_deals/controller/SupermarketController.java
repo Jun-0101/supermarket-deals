@@ -29,12 +29,7 @@ public class SupermarketController {
     @PostMapping("/add")
     public ResponseEntity<Supermarket> addSupermarket(@RequestBody @Valid SupermarketDto supermarket){
         return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.save(supermarket));
-    } 
-
-    @PostMapping("/addMany")
-    public ResponseEntity<List<Supermarket>> addSupermarkets(@RequestBody List<SupermarketDto> supermarkets){
-        return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.saveMany(supermarkets));
-    } 
+    }
 
     @DeleteMapping("/delete/{id}")
     public void deleteSupermarket(@PathVariable Long id) {

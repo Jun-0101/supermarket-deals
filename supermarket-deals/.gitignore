@@ -37,4 +37,11 @@ build/
 *.pyc
 *.pyo
 
+# Selenium
+chromedriver*
+drivers/
+
+# Environment variables
+.env
+
 **/src/main/resources/application.properties
