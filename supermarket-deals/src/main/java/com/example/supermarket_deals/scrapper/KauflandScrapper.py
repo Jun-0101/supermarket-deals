@@ -1,7 +1,5 @@
 import re
-import time
-import requests
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -42,6 +40,12 @@ class KauflandScrapper:
         driver.quit()
 
     def extract_valid_date(self, date_str: str):
+        """
+        Extract validity dates from subheader
+
+        Args:
+            date_str: subheader of the deal section, e.g. Angebote vom 2.3. bis 9.3
+        """
         year = datetime.now().year
         matches = re.findall(r'(\d{1,2})\.(\d{1,2})\.', date_str)
 
@@ -57,7 +61,16 @@ class KauflandScrapper:
         return valid_from, valid_to
 
     def extract_deals(self, items, valid_from, valid_to):
+        """
+        Extract deals from product items.
+
+        Args:
+            items: List of product elements.
+            valid_from: Start date.
+            valid_to: End date.
+        """
         deals = []
+
         for item in items:
             if "display:none" in str(item):
                 continue
@@ -82,7 +95,7 @@ class KauflandScrapper:
                 "brand": title if subtitle != "" else "",
                 "infos": " ".join([unit, base_price]),
                 "price": price,
-                "supermarketName": "kaufland",
+                "supermarketName": "Kaufland",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }

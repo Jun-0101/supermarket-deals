@@ -1,5 +1,4 @@
 import time
-import requests
 from datetime import date, timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -8,16 +7,30 @@ from bs4 import BeautifulSoup as Soup
 
 
 class PennyScrapper:
+    """
+    Scraper for Penny supermarket deals.
+
+    Attributes:
+        url (str): Target URL.
+        scrapped_deals (list): List of scraped deals.
+    """
+
     def __init__(self, url: str):
         self.url = url
         self.scrapped_deals = []
 
     def scroll_page(self, driver):
+        """
+        Scroll the webpage to load additional content.
+        """
         for _ in range(10):
             driver.execute_script("window.scrollBy(0, 4000)")
             time.sleep(1)
 
     def scrap_deals(self):
+        """
+        Scrape all deals from the Penny website.
+        """
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         driver.get(self.url)
         time.sleep(5)
@@ -39,6 +52,12 @@ class PennyScrapper:
         driver.quit()
 
     def extract_valid_date(self, section_id: str):
+        """
+        Extract validity dates from section ID.
+
+        Args:
+            section_id (str): Section identifier.
+        """
         day_map = {
             "ab-montag": (0, 6),
             "ab-donnerstag": (3, 6),
@@ -57,6 +76,14 @@ class PennyScrapper:
         return valid_from, valid_to
 
     def extract_deals(self, items, valid_from, valid_to):
+        """
+        Extract deals from offer items.
+
+        Args:
+            items: List of offer elements.
+            valid_from: Start date.
+            valid_to: End date.
+        """
         deals = []
         for item in items:
             name = item.select_one(".offer-tile__headline")
@@ -64,8 +91,14 @@ class PennyScrapper:
     
             if not name or not price:
                 continue
+
             name = name.text.strip()
             price = price.text.replace("*", "").strip()
+            
+            # Skip deal with the price like '15% Rabatt'
+            if "%" in price:
+                continue
+
             infos = item.select_one("offer-tile__unit-price")
             infos = infos.text.strip() if infos else ""
 
@@ -74,7 +107,7 @@ class PennyScrapper:
                 "brand": "",
                 "infos": infos,
                 "price": price,
-                "supermarketName": "penny",
+                "supermarketName": "Penny",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }

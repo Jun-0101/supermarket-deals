@@ -1,5 +1,4 @@
 import time, re
-import requests
 from datetime import datetime, date
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -15,6 +14,10 @@ class AldiSuedScrapper:
         self.valid_to = None
 
     def extract_valid_date(self, soup: str):
+        """
+        Extract validity dates from the first h2 header
+        """
+                
         date_heading = soup.select_one("h2.product-category-teaser-list__title")
         date_str = date_heading.text.strip()
         year = datetime.now().year
@@ -70,7 +73,7 @@ class AldiSuedScrapper:
                 "brand": brand,
                 "infos": ", ".join([unit, base_price]),
                 "price": price,
-                "supermarketName": "aldi sued",
+                "supermarketName": "Aldi Sued",
                 "validFrom": self.valid_from.isoformat(),
                 "validTo": self.valid_to.isoformat()
             }
@@ -79,4 +82,3 @@ class AldiSuedScrapper:
                 deals.append(deal)
         
         return deals
- 

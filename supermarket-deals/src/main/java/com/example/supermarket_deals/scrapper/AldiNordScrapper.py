@@ -1,5 +1,4 @@
 import time, re
-import requests
 from datetime import datetime, date, timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -72,7 +71,7 @@ class AldiNordScrapper:
                 "brand": brand,
                 "infos": ", ".join([unit, base_price]),
                 "price": price,
-                "supermarketName": "aldi nord",
+                "supermarketName": "Aldi Nord",
                 "validFrom": valid_from.isoformat(),
                 "validTo": valid_to.isoformat()
             }
@@ -81,3 +80,4 @@ class AldiNordScrapper:
                 deals.append(deal)
         
         return deals
+ 

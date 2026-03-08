@@ -6,6 +6,12 @@ from AldiNordScrapper import AldiNordScrapper
 from AldiSuedScrapper import AldiSuedScrapper
 
 def call_scrapper():
+    """
+    Run all scrapers and collect deals.
+
+    Returns:
+        list: All scraped deals.
+    """
     all_deals = []
     scrapper_map = {
         "penny": PennyScrapper("https://www.penny.de/angebote.html"),
@@ -22,12 +28,22 @@ def call_scrapper():
     return all_deals
 
 def post_scrapped_deals(scrapped_deals):
+    """
+    Post deals to the server.
+
+    Args:
+        scrapped_deals (list): List of deal dictionaries.
+    """
     try:
         requests.post("http://localhost:8080/deal/addMany", json=scrapped_deals)
+        print("Post successfully")
+
     except requests.exceptions.ConnectionError:
-        print("Server not running — start your Spring Boot app first")
+        print("Server not running")
+
     except requests.exceptions.Timeout:
         print("Request timed out")
+
     except requests.exceptions.HTTPError as e:
         print(f"HTTP error: {e.response.status_code}", e.response.text)
 
