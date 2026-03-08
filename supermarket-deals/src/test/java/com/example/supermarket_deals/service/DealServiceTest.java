@@ -74,7 +74,7 @@ public class DealServiceTest {
         LocalDate date = LocalDate.now();
 
         when(supermarketRepository.findByNameContainingIgnoreCase("rewe")).thenReturn(List.of(supermarket));
-        when(dealRepository.findActiveDealsBySupermarket(supermarket, date)).thenReturn(List.of(deal));
+        when(dealRepository.findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(supermarket), date, date)).thenReturn(List.of(deal));
         when(mapper.toDto(deal)).thenReturn(respond);
 
         List<DealRespondDto> foundDeals = dealService.getActiveDealsBySupermarketName("rewe", date);
@@ -82,7 +82,7 @@ public class DealServiceTest {
         assertEquals(1, foundDeals.size());
         assertEquals(respond, foundDeals.get(0));
         verify(supermarketRepository).findByNameContainingIgnoreCase("rewe");
-        verify(dealRepository).findActiveDealsBySupermarket(supermarket, date);
+        verify(dealRepository).findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(supermarket), date, date);
     }
 
     @Test

@@ -53,7 +53,7 @@ public class DealRepositoryTest {
 
     @Test
     void testFindActiveDealsBySupermarket() {
-        List<Deal> deals = dealRepository.findActiveDealsBySupermarket(supermarket, today);
+        List<Deal> deals = dealRepository.findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(supermarket), today, today);
         assertEquals(1, deals.size());
         assertEquals("rewe", deals.get(0).getSupermarket().getName());
     }
@@ -65,13 +65,13 @@ public class DealRepositoryTest {
         manager.persist(supermarket2);
         manager.flush();
 
-        List<Deal> deals = dealRepository.findActiveDealsBySupermarket(supermarket2, today);
+        List<Deal> deals = dealRepository.findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(supermarket2), today, today);
         assertTrue(deals.isEmpty());
     }
 
     @Test
     void testFindActiveDealsByProducList() {
-        List<Deal> deals = dealRepository.findActiveDealsByProducList(List.of(product), today);
+        List<Deal> deals = dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(product), today, today);
         assertEquals(1, deals.size());
         assertEquals("Red Bull", deals.get(0).getProduct().getName());
     }

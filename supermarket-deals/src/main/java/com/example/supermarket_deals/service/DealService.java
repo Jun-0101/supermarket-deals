@@ -36,19 +36,17 @@ public class DealService {
     }
 
     public List<DealRespondDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null) {
             throw new IllegalArgumentException("Supermarket name must not be blank");
         }
 
-        List<Supermarket> supermarkets = supermarketRepository.findByNameContainingIgnoreCase(name.trim());
+        List<Supermarket> supermarkets = supermarketRepository.findByNameContainingIgnoreCase(name);
         if (supermarkets.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Supermarket not found");
         }
 
         // collect active deals for all matching supermarkets
-        List<Deal> deals = supermarkets.stream()
-            .flatMap(sm -> dealRepository.findActiveDealsBySupermarket(sm, date).stream())
-            .toList();
+        List<Deal> deals = dealRepository.findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(supermarkets, date, date);
 
         return deals.stream().map(
             deal -> mapper.toDto(deal)
@@ -58,7 +56,7 @@ public class DealService {
     public List<DealRespondDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
-        List<Deal> deals = dealRepository.findActiveDealsByProducList(products, date);
+        List<Deal> deals = dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(products, date, date);
 
         return deals.stream().map(
             deal -> mapper.toDto(deal)
