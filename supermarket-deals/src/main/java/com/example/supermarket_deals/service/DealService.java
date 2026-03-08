@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.supermarket_deals.dto.*;
 import com.example.supermarket_deals.entity.Deal;
@@ -34,13 +36,19 @@ public class DealService {
     }
 
     public List<DealRespondDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
-        Supermarket supermarket = supermarketRepository
-            .findByNameIgnoreCase(name)
-            .orElseThrow(() -> new RuntimeException("Supermarket not found"));
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Supermarket name must not be blank");
+        }
 
-        List<Deal> deals = dealRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(
-            supermarket, date, date
-        );
+        List<Supermarket> supermarkets = supermarketRepository.findByNameContainingIgnoreCase(name.trim());
+        if (supermarkets.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Supermarket not found");
+        }
+
+        // collect active deals for all matching supermarkets
+        List<Deal> deals = supermarkets.stream()
+            .flatMap(sm -> dealRepository.findActiveDealsBySupermarket(sm, date).stream())
+            .toList();
 
         return deals.stream().map(
             deal -> mapper.toDto(deal)
@@ -50,8 +58,7 @@ public class DealService {
     public List<DealRespondDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
-        List<Deal> deals = dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
-            products, date, date);
+        List<Deal> deals = dealRepository.findActiveDealsByProducList(products, date);
 
         return deals.stream().map(
             deal -> mapper.toDto(deal)

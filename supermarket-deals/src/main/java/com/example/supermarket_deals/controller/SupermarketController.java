@@ -16,7 +16,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/supermarket")
 public class SupermarketController {
-
     @Autowired
     private SupermarketService supermarketService;
 

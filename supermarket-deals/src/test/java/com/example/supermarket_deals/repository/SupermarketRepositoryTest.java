@@ -3,6 +3,7 @@ package com.example.supermarket_deals.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -41,5 +42,13 @@ public class SupermarketRepositoryTest {
     void testFindByNameIgnoreCase_notFound() {
         Optional<Supermarket> supermarket = supermarketRepository.findByNameIgnoreCase("unknown");
         assertTrue(supermarket.isEmpty());
+    }
+
+    @Test
+    void testFindByNameContainingIgnoreCase() {
+        // "rewe" contains "we" and should return at least one supermarket
+        List<Supermarket> matches = supermarketRepository.findByNameContainingIgnoreCase("we");
+        assertEquals(1, matches.size());
+        assertEquals("rewe", matches.get(0).getName());
     }
 }

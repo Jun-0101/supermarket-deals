@@ -17,7 +17,6 @@ import com.example.supermarket_deals.service.DealService;
 @RestController
 @RequestMapping("/deal")
 public class DealController {
-
     @Autowired
     private DealService dealService;
 

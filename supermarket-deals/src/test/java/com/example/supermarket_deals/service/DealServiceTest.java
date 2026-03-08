@@ -73,23 +73,23 @@ public class DealServiceTest {
         Supermarket supermarket = deal.getSupermarket();
         LocalDate date = LocalDate.now();
 
-        when(supermarketRepository.findByNameIgnoreCase("rewe")).thenReturn(Optional.of(supermarket));
-        when(dealRepository.findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(supermarket, date, date)).thenReturn(List.of(deal));
+        when(supermarketRepository.findByNameContainingIgnoreCase("rewe")).thenReturn(List.of(supermarket));
+        when(dealRepository.findActiveDealsBySupermarket(supermarket, date)).thenReturn(List.of(deal));
         when(mapper.toDto(deal)).thenReturn(respond);
 
         List<DealRespondDto> foundDeals = dealService.getActiveDealsBySupermarketName("rewe", date);
 
         assertEquals(1, foundDeals.size());
         assertEquals(respond, foundDeals.get(0));
-        verify(supermarketRepository).findByNameIgnoreCase("rewe");
-        verify(dealRepository).findBySupermarketAndValidFromLessThanEqualAndValidToGreaterThanEqual(supermarket, date, date);
+        verify(supermarketRepository).findByNameContainingIgnoreCase("rewe");
+        verify(dealRepository).findActiveDealsBySupermarket(supermarket, date);
     }
 
     @Test
     void testGetActiveDealsBySupermarketName_throwException() {
         LocalDate date = LocalDate.now();
 
-        when(supermarketRepository.findByNameIgnoreCase("unknown")).thenReturn(Optional.empty());
+        when(supermarketRepository.findByNameContainingIgnoreCase("unknown")).thenReturn(List.of());
 
         assertThrows(RuntimeException.class, () -> dealService.getActiveDealsBySupermarketName("unknown", date));
     }
