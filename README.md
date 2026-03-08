@@ -84,7 +84,7 @@ A Spring Boot application for managing and retrieving supermarket deals. This pr
 - Search deals by supermarket name with an optional date filter.  
 
 ### Search by Product
-![Search by Product](images/byproduct.png)
+![Search by Product](images/byProduct.png)
 - Search across all supermarkets for a specific product by name.
 
 ## Testing
