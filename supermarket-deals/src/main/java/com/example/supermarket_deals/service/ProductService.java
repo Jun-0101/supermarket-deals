@@ -18,20 +18,34 @@ public class ProductService {
     @Autowired
     private ProductMapper mapper;
 
+    /**
+     * Save a single product described by the request DTO.
+     *
+     * @param request data for the product to store
+     */
     public ProductRespondDto save(ProductRequestDto request) {
         Product product = mapper.toEntity(request);
-
         Product saved = productRepo.save(product);
+
         return mapper.toDto(saved);
     }
 
+    /**
+     * Remove a product record by id.
+     *
+     * @param dealId identifier of the product; must not be null
+     */
     public void delete(Long productId) {
         if (productId == null) {
             throw new IllegalArgumentException("Product ID must not be null");
         }
+        
         productRepo.deleteById(productId);
     }
 
+    /**
+     * Retrieve all product entries.
+     */
     public List<ProductRespondDto> getAll() {
         List<Product> products = productRepo.findAll();
 

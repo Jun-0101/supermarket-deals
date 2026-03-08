@@ -10,11 +10,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface DealRepository extends JpaRepository<Deal, Long>{
+    /**
+     * Find deals that are currently active for a given supermarket.
+     */
     List<Deal> findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
-        // Find deals that are currently active for a given supermarket.
         List<Supermarket> supermarkets, LocalDate start, LocalDate end);
 
+    /**
+     * Retrieve active deals that involve any product from the supplied list.
+     */
     List<Deal> findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(
-        // Retrieve active deals that involve any product from the supplied list.
         List<Product> products, LocalDate start, LocalDate end);
 }

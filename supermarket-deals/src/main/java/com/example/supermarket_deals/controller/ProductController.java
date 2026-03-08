@@ -19,11 +19,23 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    /**
+     * Retrieve all product entries.
+     * 
+     * URL: GET /product
+     * @return list of all products
+     */
     @GetMapping
     public List<ProductRespondDto> getAllProducts() {
         return productService.getAll();
     }
 
+    /**
+     * Create a new product record.
+     *
+     * @param request product data in JSON to persist
+     * @return response entity with created product
+     */
     @PostMapping("/add")
     public ResponseEntity<ProductRespondDto> addProduct(@RequestBody @Valid ProductRequestDto request){
         ProductRespondDto saved = productService.save(request);
@@ -31,6 +43,11 @@ public class ProductController {
         return ResponseEntity.created(URI.create("/product/" + saved.getId())).body(saved);
     } 
 
+    /**
+     * Delete a product by its identifier.
+     *
+     * @param id id of the product to delete
+     */
     @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.delete(id);

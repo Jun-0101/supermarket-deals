@@ -27,6 +27,9 @@ public class DealService {
     @Autowired
     private DealMapper mapper;
 
+    /**
+     * Retrieve all deals.
+     */
     public List<DealRespondDto> getAll() {
         List<Deal> deals = dealRepository.findAll();
 
@@ -35,6 +38,13 @@ public class DealService {
         ).toList();
     }
 
+    /**
+     * Find deals that are valid on the given date for supermarkets whose name
+     * contains the supplied term (case-insensitive).
+     *
+     * @param name supermarket name (substring match, not null)
+     * @param date date of validity
+     */
     public List<DealRespondDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
         if (name == null) {
             throw new IllegalArgumentException("Supermarket name must not be blank");
@@ -53,6 +63,13 @@ public class DealService {
         ).toList();
     }
 
+    /**
+     * Retrieve deals valid on the specified date for products matching a name
+     * fragment (case-insensitive).
+     *
+     * @param name substring to look for in product names
+     * @param date date of validity
+     */
     public List<DealRespondDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
@@ -63,11 +80,17 @@ public class DealService {
         ).toList();
     }
 
+    /**
+     * Replace all existing deals with a new list.
+     *
+     * @param requests new deals to store (must not be null)
+     */
     @Transactional
     public List<DealRespondDto> saveDeals(List<DealRequestDto> requests) {
         if (requests == null) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
+
         dealRepository.deleteAll();
 
         return requests.stream().map(
@@ -75,6 +98,11 @@ public class DealService {
         ).toList();
     }
 
+    /**
+     * Save a single deal described by the request DTO.
+     *
+     * @param request data for the deal to store
+     */
     public DealRespondDto saveDeal(DealRequestDto request) {
         // find or save scrapped product
         Product product = productRepository
@@ -104,10 +132,16 @@ public class DealService {
         return mapper.toDto(saved);
     }
 
+    /**
+     * Remove a deal record by id.
+     *
+     * @param dealId identifier of the deal; must not be null
+     */
     public void delete(Long dealId) {
         if (dealId == null) {
             throw new IllegalArgumentException("Deal ID must not be null");
         }
+        
         dealRepository.deleteById(dealId);
     }
 }
