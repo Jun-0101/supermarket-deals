@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Supermarket Deals</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --card: #222;
+    --border: #2e2e2e;
+    --accent: #f0c040;
+    --accent2: #e05a2b;
+    --text: #f0ede6;
+    --muted: #888;
+    --radius: 10px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  header span {
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .tab {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1.5px;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .search-row input {
+    flex: 1;
+    min-width: 180px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-row input:focus { border-color: var(--accent); }
+  .search-row input::placeholder { color: var(--muted); }
+
+  .btn {
+    background: var(--accent);
+    color: #111;
+    border: none;
+    padding: 11px 24px;
+    border-radius: var(--radius);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:hover { background: #f5d060; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-clear {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-clear:hover { background: var(--border); color: var(--text); }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .status-dot.ok      { background: #4caf7d; }
+  .status-dot.err     { background: var(--accent2); }
+  .status-dot.loading { background: var(--accent); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .deals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .deal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s, transform 0.15s;
+    animation: fadeIn 0.3s ease both;
+  }
+  .deal-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  .deal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .deal-name   { font-size: 0.97rem; font-weight: 500; line-height: 1.4; flex: 1; }
+  .deal-price  { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--accent); letter-spacing: 1px; white-space: nowrap; }
+  .deal-brand  { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .deal-infos  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  .deal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    gap: 8px;
+  }
+
+  /* Supermarket colored badges */
+  .deal-supermarket {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: #555;
+  }
+  .sm-rewe     { background: #cc0000; }
+  .sm-penny    { background: #d15e3be6; }
+  .sm-kaufland { background: #c8a800; color: #111; }
+  .sm-aldi-nord{ background: #013f75; }
+  .sm-aldi-sued{ background: #3f9bf2; }
+  /* .sm-lidl     { background: #f9cc00; color: #003f8a; }
+  .sm-edeka    { background: #ffcc00; color: #003f8a; }
+  .sm-netto    { background: #e2001a; } */
+
+  .deal-dates { font-size: 0.73rem; color: var(--muted); }
+
+  /* Filter/sort bar */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-bar select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .filter-bar select:focus { border-color: var(--accent); }
+  .filter-label { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+  .state-box { text-align: center; padding: 80px 20px; color: var(--muted); }
+  .state-box .icon { font-size: 3rem; margin-bottom: 16px; }
+  .state-box p { font-size: 0.9rem; }
+
+  .error-msg {
+    background: #2a1212;
+    border: 1px solid #5a2020;
+    color: #f08080;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+  }
+
+  .count-badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛒 Supermarket Deals</h1>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('all', this)">All Deals</button>
+    <button class="tab" onclick="switchTab('supermarket', this)">By Supermarket</button>
+    <button class="tab" onclick="switchTab('product', this)">By Product</button>
+  </div>
+
+  <div id="search-row" class="search-row" style="display:none">
+    <input id="search-input" type="text" placeholder="Search..." />
+    <input id="date-input" type="date" />
+    <button class="btn" onclick="search()">Search</button>
+    <button class="btn btn-clear" onclick="clearSearch()">Clear</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Loading deals...</span>
+    <span class="count-badge" id="count-badge" style="display:none"></span>
+  </div>
+
+  <div id="error-box" class="error-msg" style="display:none"></div>
+
+  <div class="filter-bar" id="filter-bar" style="display:none">
+    <select id="filter-supermarket" onchange="applyFilters()">
+      <option value="">All Supermarkets</option>
+    </select>
+    <select id="sort-select" onchange="applyFilters()">
+      <option value="">Sort: Default</option>
+      <option value="price-asc">Price: Low → High</option>
+      <option value="price-desc">Price: High → Low</option>
+      <option value="name-asc">Name: A → Z</option>
+      <option value="name-desc">Name: Z → A</option>
+    </select>
+    <span class="filter-label" id="filter-label"></span>
+  </div>
+
+  <div id="deals-container"></div>
+</main>
+
+<script>
+  const API = 'http://localhost:8080';
+  let currentTab = 'all';
+  let allDeals = [];
+
+  // Color map per supermarket
+  const SM_COLORS = {
+    'rewe':      'sm-rewe',
+    'penny':     'sm-penny',
+    'kaufland':  'sm-kaufland',
+    'aldi-nord': 'sm-aldi-nord',
+    'aldi-sued': 'sm-aldi-sued',
+  };
+
+  function smClass(name) {
+    if (!name) return '';
+    const key = name.toLowerCase().replace(/\s+/g, '-');
+    return SM_COLORS[key] || '';
+  }
+
+  function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    const row   = document.getElementById('search-row');
+    const input = document.getElementById('search-input');
+
+    if (tab === 'all') {
+      row.style.display = 'none';
+      fetchDeals(`${API}/deal`);
+    } else {
+      row.style.display = 'flex';
+      input.placeholder = tab === 'supermarket'
+        ? 'Supermarket name' : 'Product name';
+      setStatus('idle', 'Enter a search term above');
+      document.getElementById('deals-container').innerHTML = '';
+      document.getElementById('count-badge').style.display = 'none';
+      document.getElementById('filter-bar').style.display  = 'none';
+    }
+  }
+
+  function search() {
+    const name = document.getElementById('search-input').value.trim();
+    const date = document.getElementById('date-input').value;
+    if (!name) { setStatus('err', 'Please enter a search term'); return; }
+
+    let url = currentTab === 'supermarket'
+      ? `${API}/deal/bySupermarket?name=${encodeURIComponent(name)}`
+      : `${API}/deal/byProduct?name=${encodeURIComponent(name)}`;
+
+    if (date) url += `&date=${date}`;
+    fetchDeals(url);
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('date-input').value   = '';
+    document.getElementById('deals-container').innerHTML = '';
+    document.getElementById('count-badge').style.display = 'none';
+    document.getElementById('filter-bar').style.display  = 'none';
+    setStatus('idle', 'Enter a search term above');
+  }
+
+  async function fetchDeals(url) {
+    setStatus('loading', 'Loading...');
+    document.getElementById('error-box').style.display   = 'none';
+    document.getElementById('deals-container').innerHTML = '';
+    document.getElementById('count-badge').style.display = 'none';
+    document.getElementById('filter-bar').style.display  = 'none';
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      allDeals = await res.json();
+      populateSupermarketFilter(allDeals);
+      renderDeals(allDeals);
+      document.getElementById('filter-bar').style.display = allDeals.length ? 'flex' : 'none';
+    } catch (err) {
+      setStatus('err', 'Failed to connect');
+      document.getElementById('error-box').textContent   = `❌ ${err.message} — make sure Spring Boot is running on port 8080`;
+      document.getElementById('error-box').style.display = 'block';
+    }
+  }
+
+  function populateSupermarketFilter(deals) {
+    const sel = document.getElementById('filter-supermarket');
+    const names = [...new Set(deals.map(d => d.supermarketName).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">All Supermarkets</option>' +
+      names.map(n => `<option value="${n}">${n.toUpperCase()}</option>`).join('');
+  }
+
+  function applyFilters() {
+    const smFilter = document.getElementById('filter-supermarket').value;
+    const sort     = document.getElementById('sort-select').value;
+
+    let filtered = smFilter
+      ? allDeals.filter(d => d.supermarketName === smFilter)
+      : [...allDeals];
+
+    if (sort === 'price-asc')  filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    if (sort === 'price-desc') filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    if (sort === 'name-asc')   filtered.sort((a, b) => (a.productName || '').localeCompare(b.productName || ''));
+    if (sort === 'name-desc')  filtered.sort((a, b) => (b.productName || '').localeCompare(a.productName || ''));
+
+    renderDeals(filtered);
+  }
+
+  function renderDeals(deals) {
+    const container = document.getElementById('deals-container');
+    const badge     = document.getElementById('count-badge');
+
+    if (!deals.length) {
+      container.innerHTML = `<div class="state-box"><div class="icon">🔍</div><p>No deals found</p></div>`;
+      setStatus('ok', 'No results');
+      badge.style.display = 'none';
+      document.getElementById('filter-label').textContent = '';
+      return;
+    }
+
+    setStatus('ok', `Showing ${deals.length} deal${deals.length > 1 ? 's' : ''}`);
+    badge.textContent   = `${deals.length} results`;
+    badge.style.display = 'inline-block';
+    document.getElementById('filter-label').textContent = `${deals.length} of ${allDeals.length} deals`;
+
+    container.innerHTML = `<div class="deals-grid">${deals.map((d, i) => `
+      <div class="deal-card" style="animation-delay:${i * 30}ms">
+        <div class="deal-header">
+          <div class="deal-name">${d.productName || '—'}</div>
+          <div class="deal-price">${d.price ? d.price + ' €' : '—'}</div>
+        </div>
+        ${d.brand ? `<div class="deal-brand">${d.brand}</div>` : ''}
+        ${d.infos ? `<div class="deal-infos">${d.infos}</div>` : ''}
+        <div class="deal-footer">
+          <span class="deal-supermarket ${smClass(d.supermarketName)}">${d.supermarketName || '—'}</span>
+          <span class="deal-dates">${formatDate(d.validFrom)} – ${formatDate(d.validTo)}</span>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+
+  function formatDate(d) {
+    if (!d) return '—';
+    const [y, m, day] = d.split('-');
+    return `${day}.${m}.${y}`;
+  }
+
+  function setStatus(type, text) {
+    const dot = document.getElementById('status-dot');
+    dot.className = 'status-dot ' + (type === 'loading' ? 'loading' : type === 'ok' ? 'ok' : type === 'err' ? 'err' : '');
+    document.getElementById('status-text').textContent = text;
+  }
+
+  fetchDeals(`${API}/deal`);
+</script>
+</body>
+</html>
