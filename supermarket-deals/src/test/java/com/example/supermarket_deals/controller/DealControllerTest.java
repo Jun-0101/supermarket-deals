@@ -53,14 +53,14 @@ public class DealControllerTest {
     // -------------------------
     @Test
     void testGetAllDeals() throws Exception {
-        when(dealService.getAll()).thenReturn(List.of(respond));
+        when(dealService.findAll()).thenReturn(List.of(respond));
 
         mockMvc.perform(get("/deals"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].productName").value("Drink"))
             .andExpect(jsonPath("$[0].supermarketName").value("rewe"));
         
-            verify(dealService, times(1)).getAll();
+            verify(dealService, times(1)).findAll();
     }
 
     // -------------------------

@@ -39,14 +39,14 @@ public class SupermarketControllerTest {
     void testReturnAllSupermarkets() throws Exception {
         Supermarket supermarket1 = Supermarket.builder().name("rewe").build();
         Supermarket supermarket2 = Supermarket.builder().name("aldi").build();
-        when(supermarketService.getAll()).thenReturn(List.of(supermarket1, supermarket2));
+        when(supermarketService.findAll()).thenReturn(List.of(supermarket1, supermarket2));
 
         mockMvc.perform(get("/supermarkets"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value("rewe"))
             .andExpect(jsonPath("$[1].name").value("aldi"));
 
-        verify(supermarketService).getAll();
+        verify(supermarketService).findAll();
     }
 
     // -------------------------

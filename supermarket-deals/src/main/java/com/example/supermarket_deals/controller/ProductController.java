@@ -27,7 +27,7 @@ public class ProductController {
      */
     @GetMapping
     public List<ProductResponseDto> getAllProducts() {
-        return productService.getAll();
+        return productService.findAll();
     }
 
     /**
@@ -49,7 +49,7 @@ public class ProductController {
      * @param id id of the product to delete
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable @Valid Long id) {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }

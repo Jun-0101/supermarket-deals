@@ -27,7 +27,7 @@ public class SupermarketController {
      */
    @GetMapping
     public List<SupermarketDto> getAllSupermarkets() {
-        List<Supermarket> supermarkets = supermarketService.getAll();
+        List<Supermarket> supermarkets = supermarketService.findAll();
         return supermarkets.stream().map(market -> new SupermarketDto(market.getName())).toList();
     }
 

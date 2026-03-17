@@ -31,7 +31,8 @@ public class DealService {
     /**
      * Retrieve all deals.
      */
-    public List<DealResponseDto> getAll() {
+    @Transactional(readOnly = true)
+    public List<DealResponseDto> findAll() {
         List<Deal> deals = dealRepository.findAll();
 
         return deals.stream().map(
@@ -46,6 +47,7 @@ public class DealService {
      * @param name supermarket name (substring match, not null)
      * @param date date of validity
      */
+    @Transactional(readOnly = true)
     public List<DealResponseDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Supermarket name must not be blank");
@@ -71,6 +73,7 @@ public class DealService {
      * @param name substring to look for in product names
      * @param date date of validity
      */
+    @Transactional(readOnly = true)
     public List<DealResponseDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
@@ -104,6 +107,7 @@ public class DealService {
      *
      * @param request data for the deal to store
      */
+    @Transactional
     public DealResponseDto saveDeal(DealRequestDto request) {
         // find or save scrapped product
         Product product = productRepository
@@ -138,6 +142,7 @@ public class DealService {
      *
      * @param dealId identifier of the deal; must not be null
      */
+    @Transactional
     public void delete(Long dealId) {
         Deal deal = dealRepository.findById(dealId)
             .orElseThrow(() -> new DealNotFoundException(dealId));

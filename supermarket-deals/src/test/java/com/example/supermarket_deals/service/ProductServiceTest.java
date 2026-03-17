@@ -1,10 +1,14 @@
 package com.example.supermarket_deals.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.supermarket_deals.dto.ProductRequestDto;
 import com.example.supermarket_deals.dto.ProductResponseDto;
 import com.example.supermarket_deals.entity.Product;
+import com.example.supermarket_deals.exception.ProductNotFoundException;
 import com.example.supermarket_deals.mapper.ProductMapper;
 import com.example.supermarket_deals.repository.ProductRepository;
 
@@ -58,28 +63,45 @@ public class ProductServiceTest {
     }
 
     // ----------------------------
+    // getAll
+    // ----------------------------
+    
+    @Test
+    void testfindAll() {
+        List<Product> products = List.of(product);
+        when (productRepository.findAll()).thenReturn(products);
+        when(mapper.toDto(product)).thenReturn(respondDto);
+
+        List<ProductResponseDto> responces = productService.findAll();
+        assertEquals(List.of(respondDto), responces);
+        verify(productRepository).findAll();
+    }
+
+    // ----------------------------
     // delete
     // ----------------------------
 
     @Test
     void testDelete_successfully() {
         Long id = 1L;
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
         productService.delete(id);
-        verify(productRepository).deleteById(id);
+
+        verify(productRepository).findById(id);
+        verify(productRepository).delete(product);
     }
 
-    // ----------------------------
-    // getAll
-    // ----------------------------
-    
     @Test
-    void testGetAll() {
-        List<Product> products = List.of(product);
-        when (productRepository.findAll()).thenReturn(products);
-        when(mapper.toDto(product)).thenReturn(respondDto);
+    void testDelete_notFound() {
+        Long id = 1L;
+        when(productRepository.findById(id)).thenReturn(Optional.empty());
 
-        List<ProductResponseDto> responces = productService.getAll();
-        assertEquals(List.of(respondDto), responces);
-        verify(productRepository).findAll();
+        ProductNotFoundException ex = assertThrows(ProductNotFoundException.class, () -> productService.delete(id));
+
+        assertEquals("Product with id 1 not found", ex.getMessage());
+        
+        verify(productRepository).findById(id);
+        verify(productRepository, never()).delete(any());
     }
+
 }

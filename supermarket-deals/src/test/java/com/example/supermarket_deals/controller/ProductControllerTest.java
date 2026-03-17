@@ -37,7 +37,7 @@ public class ProductControllerTest {
     // -------------------------
     @Test
     void testGetAllProducts() throws Exception{
-        when(productService.getAll()).thenReturn(List.of(response));
+        when(productService.findAll()).thenReturn(List.of(response));
 
         mockMvc.perform(get("/products")).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value("Milk"));
@@ -45,7 +45,7 @@ public class ProductControllerTest {
 
     @Test
     void testGetAllProducts_returnNothing() throws Exception{
-        when(productService.getAll()).thenReturn(List.of());
+        when(productService.findAll()).thenReturn(List.of());
 
         mockMvc.perform(get("/products")).andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(0));

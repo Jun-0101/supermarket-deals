@@ -4,13 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.supermarket_deals.dto.SupermarketDto;
 import com.example.supermarket_deals.entity.Supermarket;
 import com.example.supermarket_deals.repository.SupermarketRepository;
 import com.example.supermarket_deals.exception.SupermarketNotFoundException;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SupermarketService {
@@ -22,9 +21,10 @@ public class SupermarketService {
      *
      * @param request data for the supermarket to store
      */
+    @Transactional
     public Supermarket save(SupermarketDto supermarketDto) {
         if (supermarketDto == null) {
-            throw new IllegalArgumentException("Supermarket cannot be null");
+            throw new IllegalArgumentException("Supermarket request cannot be null");
         }
 
         Supermarket supermarket = new Supermarket();
@@ -36,8 +36,9 @@ public class SupermarketService {
     /**
      * Remove a supermarket record by id.
      *
-     * @param dealId identifier of the supermarket; must not be null
+     * @param supermarketId identifier of the supermarket; must not be null
      */
+    @Transactional
     public void delete(Long supermarketId) {
         Supermarket supermarket = supermarketRepo.findById(supermarketId)
             .orElseThrow(() -> new SupermarketNotFoundException(supermarketId));
@@ -48,7 +49,8 @@ public class SupermarketService {
     /**
      * Retrieve all supermarket entries.
      */
-    public List<Supermarket> getAll() {
+    @Transactional(readOnly = true)
+    public List<Supermarket> findAll() {
         return supermarketRepo.findAll();
     }
 }

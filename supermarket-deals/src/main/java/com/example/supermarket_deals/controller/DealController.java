@@ -28,7 +28,7 @@ public class DealController {
      */
    @GetMapping
     public List<DealResponseDto> getAllDeals() {
-        return dealService.getAll();
+        return dealService.findAll();
     }
 
     /**

@@ -2,6 +2,7 @@ package com.example.supermarket_deals.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +23,7 @@ import com.example.supermarket_deals.dto.DealResponseDto;
 import com.example.supermarket_deals.entity.Deal;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.entity.Supermarket;
+import com.example.supermarket_deals.exception.DealNotFoundException;
 import com.example.supermarket_deals.mapper.DealMapper;
 import com.example.supermarket_deals.repository.*;
 
@@ -47,10 +49,12 @@ public class DealServiceTest {
         LocalDate from = LocalDate.now().minusDays(1);
         LocalDate to = LocalDate.now().plusDays(1);
         BigDecimal price = BigDecimal.valueOf(1.99);
+
         Product product = new Product();
         product.setName("Drink");
         product.setBrand("Red Bull");
         product.setInfos("200 ml");
+
         Supermarket supermarket = new Supermarket();
         supermarket.setName("rewe");
         deal = Deal.builder()
@@ -120,7 +124,22 @@ public class DealServiceTest {
 
     @Test
     void testDelete_successfully() {
+        when(dealRepository.findById(1L)).thenReturn(Optional.of(deal));
         dealService.delete(1L);
-        verify(dealRepository).deleteById(1L);
+
+        verify(dealRepository).findById(1L);
+        verify(dealRepository).delete(deal);
+    }
+
+    @Test
+    void testDelete_notFound() {
+        Long id = 1L;
+        when(dealRepository.findById(1L)).thenReturn(Optional.empty());
+
+        DealNotFoundException ex = assertThrows(DealNotFoundException.class, () -> dealService.delete(id));
+        assertEquals("Deal with id 1 not found", ex.getMessage());
+
+        verify(dealRepository).findById(id);
+        verify(dealRepository, never()).delete(any());
     }
 }

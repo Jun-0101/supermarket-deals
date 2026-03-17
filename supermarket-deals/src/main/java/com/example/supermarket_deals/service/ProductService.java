@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.supermarket_deals.dto.ProductRequestDto;
 import com.example.supermarket_deals.dto.ProductResponseDto;
@@ -20,10 +21,23 @@ public class ProductService {
     private ProductMapper mapper;
 
     /**
+     * Retrieve all product entries.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> findAll() {
+        List<Product> products = productRepo.findAll();
+
+        return products.stream()
+        .map(mapper::toDto)
+        .toList();
+    }
+    
+    /**
      * Save a single product described by the request DTO.
      *
      * @param request data for the product to store
      */
+    @Transactional
     public ProductResponseDto save(ProductRequestDto request) {
         Product product = mapper.toEntity(request);
         Product saved = productRepo.save(product);
@@ -34,24 +48,13 @@ public class ProductService {
     /**
      * Remove a product record by id.
      *
-     * @param dealId identifier of the product; must not be null
+     * @param productId identifier of the product; must not be null
      */
+    @Transactional
     public void delete(Long productId) {
-
         Product product = productRepo.findById(productId)
             .orElseThrow(() -> new ProductNotFoundException(productId));
 
         productRepo.delete(product);
-    }
-
-    /**
-     * Retrieve all product entries.
-     */
-    public List<ProductResponseDto> getAll() {
-        List<Product> products = productRepo.findAll();
-
-        return products.stream().map(
-            prod -> mapper.toDto(prod)
-        ).toList();
     }
 }
