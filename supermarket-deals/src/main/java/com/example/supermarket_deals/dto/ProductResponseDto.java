@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductRespondDto {
+public class ProductResponseDto {
     @Nonnull
     private Long id;
     @NotBlank

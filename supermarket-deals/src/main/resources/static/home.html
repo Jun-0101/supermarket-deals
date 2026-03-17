@@ -331,7 +331,7 @@
 
     if (tab === 'all') {
       row.style.display = 'none';
-      fetchDeals(`${API}/deal`);
+      fetchDeals(`${API}/deals`);
     } else {
       row.style.display = 'flex';
       input.placeholder = tab === 'supermarket'
@@ -349,8 +349,8 @@
     if (!name) { setStatus('err', 'Please enter a search term'); return; }
 
     let url = currentTab === 'supermarket'
-      ? `${API}/deal/bySupermarket?name=${encodeURIComponent(name)}`
-      : `${API}/deal/byProduct?name=${encodeURIComponent(name)}`;
+      ? `${API}/deals/by-supermarket?name=${encodeURIComponent(name)}`
+      : `${API}/deals/by-product?name=${encodeURIComponent(name)}`;
 
     if (date) url += `&date=${date}`;
     fetchDeals(url);
@@ -453,7 +453,7 @@
     document.getElementById('status-text').textContent = text;
   }
 
-  fetchDeals(`${API}/deal`);
+  fetchDeals(`${API}/deals`);
 </script>
 </body>
 </html>

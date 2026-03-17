@@ -30,7 +30,7 @@ public class DealService {
     /**
      * Retrieve all deals.
      */
-    public List<DealRespondDto> getAll() {
+    public List<DealResponseDto> getAll() {
         List<Deal> deals = dealRepository.findAll();
 
         return deals.stream().map(
@@ -45,7 +45,7 @@ public class DealService {
      * @param name supermarket name (substring match, not null)
      * @param date date of validity
      */
-    public List<DealRespondDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
+    public List<DealResponseDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
         if (name == null) {
             throw new IllegalArgumentException("Supermarket name must not be blank");
         }
@@ -70,7 +70,7 @@ public class DealService {
      * @param name substring to look for in product names
      * @param date date of validity
      */
-    public List<DealRespondDto> getActiveDealsByProductName(String name, LocalDate date) {
+    public List<DealResponseDto> getActiveDealsByProductName(String name, LocalDate date) {
         List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
 
         List<Deal> deals = dealRepository.findByProductInAndValidFromLessThanEqualAndValidToGreaterThanEqual(products, date, date);
@@ -86,7 +86,7 @@ public class DealService {
      * @param requests new deals to store (must not be null)
      */
     @Transactional
-    public List<DealRespondDto> saveDeals(List<DealRequestDto> requests) {
+    public List<DealResponseDto> saveDeals(List<DealRequestDto> requests) {
         if (requests == null) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
@@ -103,7 +103,7 @@ public class DealService {
      *
      * @param request data for the deal to store
      */
-    public DealRespondDto saveDeal(DealRequestDto request) {
+    public DealResponseDto saveDeal(DealRequestDto request) {
         // find or save scrapped product
         Product product = productRepository
                 .findByNameAndBrand(request.getProductName(), request.getBrand())

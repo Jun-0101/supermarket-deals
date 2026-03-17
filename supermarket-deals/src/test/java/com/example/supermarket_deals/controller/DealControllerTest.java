@@ -1,6 +1,8 @@
 package com.example.supermarket_deals.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.supermarket_deals.dto.DealRequestDto;
-import com.example.supermarket_deals.dto.DealRespondDto;
+import com.example.supermarket_deals.dto.DealResponseDto;
 import com.example.supermarket_deals.service.DealService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,7 +36,7 @@ public class DealControllerTest {
     private DealService dealService;
 
     private DealRequestDto request;
-    private DealRespondDto respond;
+    private DealResponseDto respond;
 
     @BeforeEach
     void setUp() {
@@ -44,30 +45,32 @@ public class DealControllerTest {
         BigDecimal price = BigDecimal.valueOf(1.99);
 
         request = new DealRequestDto("Drink", "Red Bull", "200ml","rewe", price, from, to);
-        respond = new DealRespondDto(1L, "Drink", "Red Bull", "200ml", "rewe", price, from, to);
+        respond = new DealResponseDto(1L, "Drink", "Red Bull", "200ml", "rewe", price, from, to);
     }
 
     // -------------------------
-    // GET /deal
+    // GET /deals
     // -------------------------
     @Test
     void testGetAllDeals() throws Exception {
         when(dealService.getAll()).thenReturn(List.of(respond));
 
-        mockMvc.perform(get("/deal"))
+        mockMvc.perform(get("/deals"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].productName").value("Drink"))
             .andExpect(jsonPath("$[0].supermarketName").value("rewe"));
+        
+            verify(dealService, times(1)).getAll();
     }
 
     // -------------------------
-    // GET /deal/bySupermarket?name
+    // GET /deals/by-supermarket?name
     // -------------------------
     @Test
     void testGetActiveDealsBySupermarket() throws Exception {
         when(dealService.getActiveDealsBySupermarketName("rewe", LocalDate.now())).thenReturn(List.of(respond));
 
-        mockMvc.perform(get("/deal/bySupermarket").param("name", "rewe"))
+        mockMvc.perform(get("/deals/by-supermarket").param("name", "rewe"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].productName").value("Drink"))
             .andExpect(jsonPath("$[0].price").value("1.99"))
@@ -78,33 +81,37 @@ public class DealControllerTest {
     void testGetActiveDealsBySupermarket_notFound() throws Exception {
         when(dealService.getActiveDealsBySupermarketName("rewe", LocalDate.now())).thenReturn(List.of());
 
-        mockMvc.perform(get("/deal/bySupermarket").param("name", "rewe"))
+        mockMvc.perform(get("/deals/by-supermarket").param("name", "rewe"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(0));
     }
 
     // -------------------------
-    // GET /deal/byProduct?name
+    // GET /deals/by-product?name
     // -------------------------
     @Test
     void testGetActiveDealsByProductName() throws Exception {
         when(dealService.getActiveDealsByProductName("Red Bull", LocalDate.now())).thenReturn(List.of(respond));
 
-        mockMvc.perform(get("/deal/byProduct").param("name", "Red Bull"))
+        mockMvc.perform(get("/deals/by-product").param("name", "Red Bull"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].supermarketName").value("rewe"))
             .andExpect(jsonPath("$[0].price").value("1.99"));
     }
 
     // -------------------------
-    // GET /deal/add
+    // POST /deals
     // -------------------------
     @Test
     void testSaveDeal() throws Exception {
         when(dealService.saveDeal(any(DealRequestDto.class))).thenReturn(respond);
 
-        mockMvc.perform(post("/deal/add").contentType(MediaType.APPLICATION_JSON_VALUE).content(Objects.requireNonNull(mapper.writeValueAsString(request))))
+        mockMvc.perform(post("/deals")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(mapper.writeValueAsString(request)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.price").value(1.99));
+
+        verify(dealService, times(1)).saveDeal(any());
     }
 }

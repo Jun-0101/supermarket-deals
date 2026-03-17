@@ -14,7 +14,7 @@ import com.example.supermarket_deals.service.SupermarketService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/supermarket")
+@RequestMapping("/supermarkets")
 public class SupermarketController {
     @Autowired
     private SupermarketService supermarketService;
@@ -22,7 +22,7 @@ public class SupermarketController {
     /**
      * Retrieve all supermarket entries.
      * 
-     * URL: GET /supermarket
+     * URL: GET /supermarkets
      * @return list of all supermarket
      */
    @GetMapping
@@ -37,7 +37,7 @@ public class SupermarketController {
      * @param request supermarket data in JSON to persist
      * @return response entity with created supermarket
      */
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<Supermarket> addSupermarket(@RequestBody @Valid SupermarketDto supermarket){
         return ResponseEntity.status(HttpStatus.CREATED).body(supermarketService.save(supermarket));
     }
@@ -47,8 +47,9 @@ public class SupermarketController {
      *
      * @param id id of the supermarket to delete
      */
-    @DeleteMapping("/delete/{id}")
-    public void deleteSupermarket(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSupermarket(@PathVariable Long id) {
         supermarketService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -15,7 +15,7 @@ import com.example.supermarket_deals.dto.*;
 import com.example.supermarket_deals.service.DealService;
 
 @RestController
-@RequestMapping("/deal")
+@RequestMapping("/deals")
 public class DealController {
     @Autowired
     private DealService dealService;
@@ -24,10 +24,10 @@ public class DealController {
      * Returns all deals stored in the system
      * regardless of supermarket or date.
      *
-     * URL: GET /deal
+     * URL: GET /deals
      */
    @GetMapping
-    public List<DealRespondDto> getAllDeals() {
+    public List<DealResponseDto> getAllDeals() {
         return dealService.getAll();
     }
 
@@ -35,36 +35,36 @@ public class DealController {
      * Returns active deals for a specific supermarket.
      *
      * Example requests:
-     * GET /deal/bySupermarket?name=rewe
-     * GET /deal/bySupermarket?name=rewe&date=2026-03-08
+     * GET /deals/by-supermarket?name=rewe
+     * GET /deals/by-supermarket?name=rewe&date=2026-03-08
      * 
-     * URL: GET /deal/bySupermarket
+     * URL: GET /deals/by-supermarket
      */
-    @GetMapping("/bySupermarket")
-    public List<DealRespondDto> getActiveDealsBySupermarket(
+    @GetMapping("/by-supermarket")
+    public List<DealResponseDto> getActiveDealsBySupermarket(
         @RequestParam String name,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-            if (date == null) date = LocalDate.now();
+            LocalDate validDate = date != null? date : LocalDate.now();
 
-            return dealService.getActiveDealsBySupermarketName(name, date);
+            return dealService.getActiveDealsBySupermarketName(name, validDate);
         }
     
     /**
      * Returns active deals for a specific product name.
      *
      * Example requests:
-     * GET /deal/byProduct?name=milch
-     * GET /deal/byProduct?name=milch&date=2026-03-08
+     * GET /deals/by-product?name=milch
+     * GET /deals/by-product?name=milch&date=2026-03-08
      * 
-     * URL: GET /deal/byProduct
+     * URL: GET /deals/by-product
      */
-    @GetMapping("/byProduct")
-    public List<DealRespondDto> getActiveDealsByProductName(
+    @GetMapping("/by-product")
+    public List<DealResponseDto> getActiveDealsByProductName(
         @RequestParam String name,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-            if (date == null) date = LocalDate.now();
+            LocalDate validDate = date != null? date : LocalDate.now();
 
-            return dealService.getActiveDealsByProductName(name, date);
+            return dealService.getActiveDealsByProductName(name, validDate);
         }
 
     /**
@@ -73,11 +73,11 @@ public class DealController {
      * @param request the deal details in JSON to store
      * @return a response entity containing the saved deal and headers
      */
-    @PostMapping("/add")
-    public ResponseEntity<DealRespondDto> saveDeal(@RequestBody @Valid DealRequestDto request) {
-        DealRespondDto saved = dealService.saveDeal(request);
+    @PostMapping
+    public ResponseEntity<DealResponseDto> saveDeal(@RequestBody @Valid DealRequestDto request) {
+        DealResponseDto saved = dealService.saveDeal(request);
         
-        return ResponseEntity.created(URI.create("/product/" + saved.getId())).body(saved);
+        return ResponseEntity.created(URI.create("/deals/" + saved.getId())).body(saved);
     }
 
     /**
@@ -86,8 +86,8 @@ public class DealController {
      * @param requests list of deal data objects in JSON to store
      * @return response containing saved deals
      */
-    @PostMapping("/addMany")
-    public ResponseEntity<List<DealRespondDto>> saveDeals(@RequestBody List<DealRequestDto> requests) {
+    @PostMapping("/bulk")
+    public ResponseEntity<List<DealResponseDto>> saveDeals(@RequestBody List<@Valid DealRequestDto> requests) {
         return ResponseEntity.status(HttpStatus.CREATED).body(dealService.saveDeals(requests));
     }
 
@@ -96,8 +96,10 @@ public class DealController {
      *
      * @param id the deal id to delete
      */
-    @DeleteMapping("/delete/{id}")
-    public void deleteDeal(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDeal(@PathVariable Long id) {
         dealService.delete(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

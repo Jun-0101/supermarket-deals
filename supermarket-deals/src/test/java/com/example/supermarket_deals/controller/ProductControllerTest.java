@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.supermarket_deals.dto.ProductRespondDto;
+import com.example.supermarket_deals.dto.ProductResponseDto;
 import com.example.supermarket_deals.service.ProductService;
 
 @WebMvcTest(ProductController.class)
@@ -23,23 +23,23 @@ public class ProductControllerTest {
     private MockMvc mockMvc;
     @MockitoBean
     private ProductService productService;
-    private ProductRespondDto response;
+    private ProductResponseDto response;
 
     @BeforeEach
     void setUp() {
-        response = new ProductRespondDto();
+        response = new ProductResponseDto();
         response.setId(1L);
         response.setName("Milk");
     }
 
     // -------------------------
-    // GET /product
+    // GET /products
     // -------------------------
     @Test
     void testGetAllProducts() throws Exception{
         when(productService.getAll()).thenReturn(List.of(response));
 
-        mockMvc.perform(get("/product")).andExpect(status().isOk())
+        mockMvc.perform(get("/products")).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value("Milk"));
     }
 
@@ -47,12 +47,12 @@ public class ProductControllerTest {
     void testGetAllProducts_returnNothing() throws Exception{
         when(productService.getAll()).thenReturn(List.of());
 
-        mockMvc.perform(get("/product")).andExpect(status().isOk())
+        mockMvc.perform(get("/products")).andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(0));
     }
 
     // -------------------------
-    // GET /product/add
+    // GET /products
     // -------------------------
     
 }

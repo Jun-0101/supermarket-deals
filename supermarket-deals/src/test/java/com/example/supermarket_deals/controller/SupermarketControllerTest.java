@@ -33,7 +33,7 @@ public class SupermarketControllerTest {
     private ObjectMapper objectMapper;
 
     // -------------------------
-    // GET /supermarket
+    // GET /supermarketss
     // -------------------------
     @Test
     void testReturnAllSupermarkets() throws Exception {
@@ -41,7 +41,7 @@ public class SupermarketControllerTest {
         Supermarket supermarket2 = Supermarket.builder().name("aldi").build();
         when(supermarketService.getAll()).thenReturn(List.of(supermarket1, supermarket2));
 
-        mockMvc.perform(get("/supermarket"))
+        mockMvc.perform(get("/supermarkets"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value("rewe"))
             .andExpect(jsonPath("$[1].name").value("aldi"));
@@ -50,7 +50,7 @@ public class SupermarketControllerTest {
     }
 
     // -------------------------
-    // POST /supermarket/add
+    // POST /supermarkets
     // -------------------------
     @Test
     void testAddSupermarket() throws Exception {
@@ -59,7 +59,7 @@ public class SupermarketControllerTest {
         Supermarket saved = new Supermarket(1L, "rewe");
         when(supermarketService.save(any())).thenReturn(saved);
 
-        mockMvc.perform(post("/supermarket/add").contentType(MediaType.APPLICATION_JSON_VALUE).content(Objects.requireNonNull(objectMapper.writeValueAsString(input))))
+        mockMvc.perform(post("/supermarkets").contentType(MediaType.APPLICATION_JSON_VALUE).content(Objects.requireNonNull(objectMapper.writeValueAsString(input))))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.name").value("rewe"));
@@ -68,11 +68,11 @@ public class SupermarketControllerTest {
     }
 
     // --------------------------
-    // DELETE /supermarket/delete/{id} 
+    // DELETE /supermarkets/{id} 
     // --------------------------
     @Test
     void testdDeleteSupermarket() throws Exception {
-        mockMvc.perform(delete("/supermarket/delete/2"))
+        mockMvc.perform(delete("/supermarkets/2"))
             .andExpect(status().isOk());
         verify(supermarketService).delete(2L);
     }

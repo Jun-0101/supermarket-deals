@@ -35,7 +35,7 @@ def post_scrapped_deals(scrapped_deals):
         scrapped_deals (list): List of deal dictionaries.
     """
     try:
-        requests.post("http://localhost:8080/deal/addMany", json=scrapped_deals)
+        requests.post("http://localhost:8080/deals/bulk", json=scrapped_deals)
         print("Post successfully")
 
     except requests.exceptions.ConnectionError:

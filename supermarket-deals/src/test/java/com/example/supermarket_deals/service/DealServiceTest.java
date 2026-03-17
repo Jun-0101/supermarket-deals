@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.supermarket_deals.dto.DealRequestDto;
-import com.example.supermarket_deals.dto.DealRespondDto;
+import com.example.supermarket_deals.dto.DealResponseDto;
 import com.example.supermarket_deals.entity.Deal;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.entity.Supermarket;
@@ -40,7 +40,7 @@ public class DealServiceTest {
 
     private Deal deal;
     private DealRequestDto request;
-    private DealRespondDto respond;
+    private DealResponseDto respond;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +62,7 @@ public class DealServiceTest {
             .build();
 
         request = new DealRequestDto("Drink", "Red Bull", "200ml","rewe", price, from, to);
-        respond = new DealRespondDto(1L, "Drink", "Red Bull", "200ml", "rewe", price, from, to);
+        respond = new DealResponseDto(1L, "Drink", "Red Bull", "200ml", "rewe", price, from, to);
     }
     // ----------------------------
     // getActiveDealsBySupermarketName
@@ -77,7 +77,7 @@ public class DealServiceTest {
         when(dealRepository.findBySupermarketInAndValidFromLessThanEqualAndValidToGreaterThanEqual(List.of(supermarket), date, date)).thenReturn(List.of(deal));
         when(mapper.toDto(deal)).thenReturn(respond);
 
-        List<DealRespondDto> foundDeals = dealService.getActiveDealsBySupermarketName("rewe", date);
+        List<DealResponseDto> foundDeals = dealService.getActiveDealsBySupermarketName("rewe", date);
 
         assertEquals(1, foundDeals.size());
         assertEquals(respond, foundDeals.get(0));
@@ -109,7 +109,7 @@ public class DealServiceTest {
         when(dealRepository.save(any())).thenReturn(deal);
         when(mapper.toDto(deal)).thenReturn(respond);
 
-        DealRespondDto savedDeal = dealService.saveDeal(request);
+        DealResponseDto savedDeal = dealService.saveDeal(request);
         assertEquals(respond, savedDeal);
         verify(dealRepository).save(deal);
     }

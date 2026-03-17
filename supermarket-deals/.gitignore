@@ -44,4 +44,4 @@ drivers/
 
 # Environment variables
 .env
-
+**/db

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.supermarket_deals.dto.ProductRequestDto;
-import com.example.supermarket_deals.dto.ProductRespondDto;
+import com.example.supermarket_deals.dto.ProductResponseDto;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.mapper.ProductMapper;
 import com.example.supermarket_deals.repository.ProductRepository;
@@ -23,7 +23,7 @@ public class ProductService {
      *
      * @param request data for the product to store
      */
-    public ProductRespondDto save(ProductRequestDto request) {
+    public ProductResponseDto save(ProductRequestDto request) {
         Product product = mapper.toEntity(request);
         Product saved = productRepo.save(product);
 
@@ -46,7 +46,7 @@ public class ProductService {
     /**
      * Retrieve all product entries.
      */
-    public List<ProductRespondDto> getAll() {
+    public List<ProductResponseDto> getAll() {
         List<Product> products = productRepo.findAll();
 
         return products.stream().map(
