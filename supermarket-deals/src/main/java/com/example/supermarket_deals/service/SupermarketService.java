@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.supermarket_deals.dto.SupermarketDto;
 import com.example.supermarket_deals.entity.Supermarket;
 import com.example.supermarket_deals.repository.SupermarketRepository;
+import com.example.supermarket_deals.exception.SupermarketNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -38,15 +39,10 @@ public class SupermarketService {
      * @param dealId identifier of the supermarket; must not be null
      */
     public void delete(Long supermarketId) {
-        if (supermarketId == null) {
-            throw new IllegalArgumentException("Supermarket ID must not be null");
-        }
+        Supermarket supermarket = supermarketRepo.findById(supermarketId)
+            .orElseThrow(() -> new SupermarketNotFoundException(supermarketId));
 
-        if (!supermarketRepo.existsById(supermarketId)) {
-            throw new EntityNotFoundException("Supermarket ID not found");
-        }
-
-        supermarketRepo.deleteById(supermarketId);
+        supermarketRepo.delete(supermarket);
     }
 
     /**

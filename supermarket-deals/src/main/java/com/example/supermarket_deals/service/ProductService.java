@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.supermarket_deals.dto.ProductRequestDto;
 import com.example.supermarket_deals.dto.ProductResponseDto;
 import com.example.supermarket_deals.entity.Product;
+import com.example.supermarket_deals.exception.ProductNotFoundException;
 import com.example.supermarket_deals.mapper.ProductMapper;
 import com.example.supermarket_deals.repository.ProductRepository;
 
@@ -36,11 +37,11 @@ public class ProductService {
      * @param dealId identifier of the product; must not be null
      */
     public void delete(Long productId) {
-        if (productId == null) {
-            throw new IllegalArgumentException("Product ID must not be null");
-        }
-        
-        productRepo.deleteById(productId);
+
+        Product product = productRepo.findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        productRepo.delete(product);
     }
 
     /**

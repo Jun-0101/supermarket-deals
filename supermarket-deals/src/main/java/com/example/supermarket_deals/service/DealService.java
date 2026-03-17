@@ -13,6 +13,7 @@ import com.example.supermarket_deals.dto.*;
 import com.example.supermarket_deals.entity.Deal;
 import com.example.supermarket_deals.entity.Product;
 import com.example.supermarket_deals.entity.Supermarket;
+import com.example.supermarket_deals.exception.DealNotFoundException;
 import com.example.supermarket_deals.mapper.DealMapper;
 import com.example.supermarket_deals.repository.*;
 
@@ -46,7 +47,7 @@ public class DealService {
      * @param date date of validity
      */
     public List<DealResponseDto> getActiveDealsBySupermarketName(String name, LocalDate date) {
-        if (name == null) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Supermarket name must not be blank");
         }
 
@@ -87,7 +88,7 @@ public class DealService {
      */
     @Transactional
     public List<DealResponseDto> saveDeals(List<DealRequestDto> requests) {
-        if (requests == null) {
+        if (requests == null || requests.isEmpty()) {
             throw new IllegalArgumentException("Deal list can not be null");
         }
 
@@ -138,10 +139,9 @@ public class DealService {
      * @param dealId identifier of the deal; must not be null
      */
     public void delete(Long dealId) {
-        if (dealId == null) {
-            throw new IllegalArgumentException("Deal ID must not be null");
-        }
+        Deal deal = dealRepository.findById(dealId)
+            .orElseThrow(() -> new DealNotFoundException(dealId));
         
-        dealRepository.deleteById(dealId);
+        dealRepository.delete(deal);
     }
 }
